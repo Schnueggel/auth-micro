@@ -8,6 +8,7 @@ class Token {
 
     createToken(userId) {
         return new Promise((resolve) => {
+            // TODO error handling
             resolve(jwt.sign({}, this.rsa.exportKey(), {
                 algorithm: 'RS256',
                 expiresIn: '1d',
@@ -21,6 +22,7 @@ class Token {
 
     verifyToken(token) {
         return new Promise((resolve) => {
+            // TODO error handling
             resolve(jwt.verify(token, this.rsa.exportKey('public')));
         });
     }
