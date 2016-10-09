@@ -33,5 +33,6 @@ describe('Test user', () => {
         };
         const result = await userModel.createUser(user);
         assert.isTrue(result instanceof Error);
+        assert.equal(result.message, 'User already exists');
     });
 });
