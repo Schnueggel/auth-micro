@@ -1,0 +1,33 @@
+{
+  "name": "auth-micro",
+  "version": "1.0.0",
+  "description": "Micro Service for Authentication using jwt",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^0.8.7",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.1.9",
+    "mongodb": "^2.2.10",
+    "passport": "^0.3.2",
+    "pm2": "^2.0.18"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2017": "^6.16.0",
+    "chai": "^3.5.0",
+    "mocha": "^3.1.0"
+  },
+  "scripts": {
+    "test": "mocha ./dist/**/*.spec.js --recursive",
+    "start": "node dist/server.js",
+    "build": "babel src --out-dir dist --presets es2017",
+    "build-watch": "babel src --out-dir dist --presets es2017 --watch"
+  },
+  "keywords": [
+    "auth",
+    "jwt",
+    "service"
+  ],
+  "author": "Christian Steinmann",
+  "license": "ISC"
+}
