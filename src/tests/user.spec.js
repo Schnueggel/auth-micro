@@ -2,9 +2,9 @@ const assert = require('chai').assert;
 const describe = require('mocha').describe;
 const it = require('mocha').it;
 const before = require('mocha').before;
-const userModel = require('../../dist/user');
-const db = require('../../dist/db');
-const config = require('../../dist/config');
+const userModel = require('../user');
+const db = require('../db');
+const config = require('../config');
 
 describe('Test user', () => {
     before(async () => {
@@ -34,5 +34,16 @@ describe('Test user', () => {
         const result = await userModel.createUser(user);
         assert.isTrue(result instanceof Error);
         assert.equal(result.message, 'User already exists');
+    });
+
+    it('should not create invalid user', async () => {
+        const user = {
+            email: '',
+            username: 'test2',
+            password: '12345678'
+        };
+        const result = await userModel.createUser(user);
+        assert.isTrue(result instanceof Error);
+        assert.equal(result.message, 'Invalid email');
     });
 });

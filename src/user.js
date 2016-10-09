@@ -67,19 +67,9 @@ class User {
     encryptPassword(password) {
         return new Promise(
             (resolve, reject) => {
-                bcrypt.genSalt(
-                    10, function (err, salt) {
-                        bcrypt.hash(
-                            password, salt, function (err, hash) {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve(hash);
-                                }
-                            }
-                        );
-                    }
-                );
+                const salt = bcrypt.genSaltSync(10);
+                const hash = bcrypt.hashSync(password,salt);
+                resolve(hash);
             }
         );
     }
@@ -87,15 +77,12 @@ class User {
     comparePassword(password, current) {
         return new Promise(
             (resolve, reject) => {
-                bcrypt.compare(
-                    password, current, function (err, res) {
-                        if (res) {
-                            resolve(true);
-                        } else {
-                            resolve(false);
-                        }
-                    }
-                );
+                const equal = bcrypt.compareSync(password, current);
+                if (equal) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
             }
         );
     }
