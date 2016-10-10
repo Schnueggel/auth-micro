@@ -31,9 +31,13 @@ describe('Test user', () => {
             username: 'test2',
             password: '12345678'
         };
-        const result = await userModel.createUser(user);
-        assert.isTrue(result instanceof Error);
-        assert.equal(result.message, 'User already exists');
+        try {
+            const result = await userModel.createUser(user);
+            assert.isFalse(result);
+        } catch (err) {
+            assert.isTrue(err instanceof Error);
+            assert.equal(err.message, 'Creating user failed');
+        }
     });
 
     it('should not create invalid user', async () => {
@@ -42,8 +46,12 @@ describe('Test user', () => {
             username: 'test2',
             password: '12345678'
         };
-        const result = await userModel.createUser(user);
-        assert.isTrue(result instanceof Error);
-        assert.equal(result.message, 'Invalid email');
+        try {
+            const result = await userModel.createUser(user);
+            assert.isFalse(result);
+        } catch (err) {
+            assert.isTrue(err instanceof Error);
+            assert.equal(err.message, 'Invalid email');
+        }
     });
 });

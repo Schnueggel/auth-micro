@@ -32,11 +32,11 @@ class Token {
             const userData = await userModel.find(tokenData.sub);
 
             if (!userData) {
-                resolve(new Error('User not found'));
+                reject(new Error('User not found'));
             } else if (userData instanceof Error) {
-                resolve(userData);
+                reject(userData);
             } else if (isNaN(tokenData.revokeId) || tokenData.revokeId !== userData.revokeId) {
-                resolve(new Error('Invalid Revoke Id'));
+                reject(new Error('Invalid Revoke Id'));
             } else {
                 resolve(true);
             }

@@ -11,7 +11,7 @@ class User {
     async createUser(data) {
         const validUserError = this.isValidUserData(data);
         if (validUserError instanceof Error) {
-            return validUserError;
+            throw validUserError;
         }
         const collection = await db.getUsers();
 
@@ -29,18 +29,17 @@ class User {
             );
 
             if (result.modifiedCount || result.upsertedId === null) {
-                return new Error('User already exists');
+                throw new Error('User already exists');
             }
             return await this.find(result.upsertedId._id);
         } catch (err) {
-            console.error(err);
-            return new Error('Creating user failed');
+            throw new Error('Creating user failed');
         }
     }
 
     async revoke(_id) {
         if (!id) {
-            return new Error('Invalid argument _id');
+            throw new Error('Invalid argument _id');
         }
 
         const collection = await db.getUsers();
@@ -51,7 +50,7 @@ class User {
         );
 
         if (result.modifiedCount !== 1) {
-            return new Error('User not found');
+            throw new Error('User not found');
         }
 
         return true;
@@ -59,15 +58,13 @@ class User {
 
     async find(_id) {
         if (!_id) {
-            console.warn('Invalid user id');
-            return new Error('Invalid argument _id');
+            throw new Error('Invalid argument _id');
         }
         try {
             const collection  = await db.getUsers();
             return await collection.findOne({_id: ObjectId(_id)});
         } catch(err) {
-            console.error(err);
-            return new Error('Fetching user failed', 108);
+            throw new Error('Fetching user failed', 108);
         }
     }
 
