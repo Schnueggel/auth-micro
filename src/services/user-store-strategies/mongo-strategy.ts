@@ -46,7 +46,7 @@ class MongoStrategy implements UserStrategy {
         const collection = await db.getUsers();
         const result = await collection.updateOne(
             { _id },
-            { $set: { revokeId: Date().now() } },
+            { $set: { revokeId: new Date().now() } },
             {}
         );
 
