@@ -2,8 +2,8 @@ const assert = require('chai').assert;
 const describe = require('mocha').describe;
 const it = require('mocha').it;
 const before = require('mocha').before;
-const userModel = require('../user');
-const db = require('../db');
+const userModel = require('../services/user');
+const db = require('../services/db');
 const config = require('../config');
 
 describe('Test user', () => {

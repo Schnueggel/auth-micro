@@ -1,11 +1,11 @@
-const token = require('../token');
+const token = require('../services/token');
 const assert = require('chai').assert;
 const describe = require('mocha').describe;
 const it = require('mocha').it;
 const before = require('mocha').before;
-const db = require('../db');
+const db = require('../services/db');
 const config = require('../config');
-const user = require('../user');
+const user = require('../services/user');
 const jwt = require('jsonwebtoken');
 
 describe('Test token', () => {

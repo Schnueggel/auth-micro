@@ -1,4 +1,4 @@
-const config = require('./config');
+const config = require('./../config');
 const MongoClient = require('mongodb').MongoClient;
 
 class Db {
@@ -35,4 +35,4 @@ class Db {
     }
 }
 
-module.exports = new Db();
+module.exports = Db;

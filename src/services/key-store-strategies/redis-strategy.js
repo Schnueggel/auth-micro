@@ -14,7 +14,7 @@ class RedisStrategy {
     }
 
     /**
-     *
+     * Resolve with null if key does not exist
      * @param {string} key
      * @return {Promise.<string>}
      */

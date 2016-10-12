@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const NodeRsa = require('node-rsa');
-const userModel = require('./user');
 
 class Token {
-    constructor() {
+    constructor(userService) {
         this.rsa = new NodeRsa({b:2048});
+        this.userService = userService;
     }
 
     createToken(userData) {
@@ -29,7 +29,7 @@ class Token {
                 return reject(tokenData);
             }
 
-            const userData = await userModel.find(tokenData.sub);
+            const userData = await this.userService.find(tokenData.sub);
 
             if (!userData) {
                 reject(new Error('User not found'));
@@ -44,4 +44,4 @@ class Token {
     }
 }
 
-module.exports = new Token();
+module.exports = Token;

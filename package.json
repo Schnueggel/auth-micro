@@ -23,7 +23,8 @@
     "test": "mocha ./dist/**/*.spec.js --recursive",
     "start": "node dist/server.js",
     "build": "babel src --out-dir dist --presets es2017",
-    "build-watch": "babel src --out-dir dist --presets es2017 --watch"
+    "build-watch": "babel src/**/*.js --out-dir dist/ --presets es2017 --watch",
+    "typescript": "tsc --rootDir src --outDir dist"
   },
   "keywords": [
     "auth",
