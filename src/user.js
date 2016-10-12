@@ -1,7 +1,7 @@
 const config = require('./config');
 const bcrypt = require('bcrypt');
 const db = require('./db');
-const ObjectId = require('mongodb').ObjectId
+const ObjectId = require('mongodb').ObjectId;
 
 class User {
     constructor() {

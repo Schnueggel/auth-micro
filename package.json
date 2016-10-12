@@ -9,7 +9,8 @@
     "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.10",
     "passport": "^0.3.2",
-    "pm2": "^2.0.18"
+    "pm2": "^2.0.18",
+    "redis": "^2.6.2"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
