@@ -1,6 +1,7 @@
-const express = require('express');
+import * as express from 'express';
+import config from './config';
+
 const app = express();
-const config = require('./config');
 
 app.post('/auth', (req, res) => {
 

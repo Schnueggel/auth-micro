@@ -6,6 +6,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "typings/index.d.ts",
     "typings/typings.d.ts"
   ],
   "exclude": [

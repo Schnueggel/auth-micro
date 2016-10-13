@@ -21,7 +21,7 @@ export interface UserData {
     password: string;
 }
 
-class User {
+export default class UserService {
     private strategy: UserStrategy;
 
     constructor(strategy: UserStrategy) {
@@ -52,5 +52,3 @@ class User {
         return await this.strategy.deleteUser(_id);
     }
 }
-
-export default User;

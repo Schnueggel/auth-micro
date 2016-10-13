@@ -1,16 +1,21 @@
-const jwt = require('jsonwebtoken');
-const NodeRsa = require('node-rsa');
+import * as jwt from 'jsonwebtoken';
+import * as NodeRsa from 'node-rsa';
+import UserService from './user-service';
+import { UserModel } from './user-service';
 
-class Token {
+export default class TokenService {
+    private rsa: NodeRsa;
+    private userService: UserService;
+
     constructor(userService) {
         this.rsa = new NodeRsa({b:2048});
         this.userService = userService;
     }
 
-    createToken(userData) {
+    createToken(userModel: UserModel): Promise<string> {
         return new Promise((resolve) => {
             // TODO error handling
-            resolve(jwt.sign({revokeId: userData.revokeId, sub: userData._id}, this.rsa.exportKey(), {
+            resolve(jwt.sign({revokeId: userModel.revokeId, sub: userModel._id}, this.rsa.exportKey(), {
                 algorithm: 'RS256',
                 expiresIn: '1d',
                 header: {
@@ -20,7 +25,7 @@ class Token {
         });
     }
 
-    verifyToken(token) {
+    verifyToken(token: string): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             // TODO error handling
             const tokenData = jwt.verify(token, this.rsa.exportKey('public'));
@@ -43,5 +48,3 @@ class Token {
         });
     }
 }
-
-module.exports = Token;

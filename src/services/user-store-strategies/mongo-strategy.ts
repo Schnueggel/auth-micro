@@ -1,7 +1,7 @@
-import { UserStrategy, UserModel, UserData } from '../user';
+import { UserStrategy, UserModel, UserData } from '../user-service';
 const config = require('./../../config');
 const bcrypt = require('bcrypt');
-const db = require('../db');
+const db = require('./mongo-db');
 const ObjectId = require('mongodb').ObjectId;
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
 

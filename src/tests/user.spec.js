@@ -3,7 +3,7 @@ const describe = require('mocha').describe;
 const it = require('mocha').it;
 const before = require('mocha').before;
 const userModel = require('../services/user');
-const db = require('../services/db');
+const db = require('../services/user-store-strategies/mongo-db');
 const config = require('../config');
 
 describe('Test user', () => {

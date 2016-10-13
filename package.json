@@ -16,15 +16,16 @@
     "babel-cli": "^6.16.0",
     "babel-preset-es2017": "^6.16.0",
     "chai": "^3.5.0",
-    "mocha": "^3.1.0",
+    "mocha": "^3.1.2",
     "node-rsa": "^0.4.2"
   },
   "scripts": {
     "test": "mocha ./dist/**/*.spec.js --recursive",
     "start": "node dist/server.js",
     "build": "babel src --out-dir dist --presets es2017",
-    "build-watch": "babel src/**/*.js --out-dir dist/ --presets es2017 --watch",
-    "typescript": "tsc --rootDir src --outDir dist"
+    "build:watch": "babel src/**/*.js --out-dir dist/ --presets es2017 --watch",
+    "tsc": "tsc --rootDir src --outDir dist",
+    "tsc:watch": "tsc --rootDir src --outDir dist -w"
   },
   "keywords": [
     "auth",
