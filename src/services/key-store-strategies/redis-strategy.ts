@@ -20,11 +20,11 @@ export default class RedisStrategy implements KeyStoreStrategy {
         return this.client.getAsync(key);
     }
 
-    set(key: string, value: string, ttl?: number): Promise<boolean> {
+    set(key: string, value: string, ttl?: number): Promise<string> {
         return this.client.setAsync(key, value).then(
             result => {
                 this.client.expire(key, ttl || config.PUBLIC_KEY_TTL || 3600);
-                return result === 'OK';
+                return key;
             }
         );
     }

@@ -1,14 +1,17 @@
 import * as crypto from 'crypto';
+import NodeRsa = require('node-rsa');
 
 export interface KeyStoreStrategy {
     get(_id: string): Promise<string>;
     del(_id: string): Promise<boolean>;
-    set(key: string, value:string, ttl?: number): Promise<boolean>;
+    set(key: string, value: string, ttl?: number): Promise<string>;
 }
 
-export default class KeyStore {
+export default class KeyStoreService {
     private strategy: KeyStoreStrategy;
-    constructor (strategy: KeyStoreStrategy) {
+    public rsa: NodeRsa;
+
+    constructor(strategy: KeyStoreStrategy) {
         this.strategy = strategy;
     }
 
@@ -16,7 +19,7 @@ export default class KeyStore {
         return this.strategy.get(key);
     }
 
-    store(key): Promise<boolean> {
+    store(key): Promise<string> {
         return this.hashKey(key).then(hash => this.strategy.set(hash, key));
     }
 
@@ -26,5 +29,22 @@ export default class KeyStore {
 
     del(key): Promise<boolean> {
         return this.strategy.del(key);
+    }
+
+    async getRsa(): Promise<NodeRsa> {
+        if (this.rsa) {
+            return Promise.resolve(this.rsa);
+        }
+        return this.initRsa();
+    }
+
+    /**
+     * This should only be called once during app start
+     * @return {Promise<NodeRsa>}
+     */
+    async initRsa(): Promise<NodeRsa> {
+        this.rsa = new NodeRsa({b: 2048});
+        await this.store(this.rsa.exportKey('public'));
+        return Promise.resolve(this.rsa);
     }
 }

@@ -13,7 +13,7 @@ export default class MemoryStrategy implements KeyStoreStrategy {
         );
     }
 
-    set(key: string, value: string, ttl: number): Promise<boolean> {
+    set(key: string, value: string, ttl: number): Promise<string> {
         return new Promise(
             (resolve) => {
                 ttl = ttl || config.PUBLIC_KEY_TTL || 3600;
@@ -28,7 +28,7 @@ export default class MemoryStrategy implements KeyStoreStrategy {
                     }
                 );
 
-                resolve(true);
+                resolve(key);
             }
         );
     }

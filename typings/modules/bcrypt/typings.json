@@ -1,0 +1,11 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/types/npm-bcrypt/1713a9d9fccf9a1a34ae8cf1f39a818a43ae2953/typings.json",
+    "raw": "registry:npm/bcrypt#0.8.0+20161010165625",
+    "main": "index.d.ts",
+    "version": "0.8.0",
+    "name": "bcrypt",
+    "type": "typings"
+  }
+}

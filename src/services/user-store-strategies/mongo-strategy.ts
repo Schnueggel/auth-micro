@@ -1,12 +1,21 @@
 import { UserStrategy, UserModel, UserData } from '../user-service';
-const config = require('./../../config');
-const bcrypt = require('bcrypt');
-const db = require('./mongo-db');
-const ObjectId = require('mongodb').ObjectId;
+import config from './../../config';
+import * as bcrypt from 'bcrypt';
+import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
+import MongoDb from './mongo-db';
 
 class MongoStrategy implements UserStrategy {
     private emailRegex: RegExp = /[^ @]*@[^ @]*/;
+    public db: MongoDb;
+
+    constructor(db?: MongoDb) {
+        if (!db) {
+            this.db = new MongoDb();
+        } else {
+            this.db = db;
+        }
+    }
 
     async createUser(data): Promise<UserModel> {
         const validUserError = this.isValidUserData(data);
@@ -15,17 +24,19 @@ class MongoStrategy implements UserStrategy {
         }
         const collection = await db.getUsers();
 
-        data = Object.assign({}, data, {
-            createdAt: new Date().getTime(),
-            updatedAt: null,
-            revokeId: new Date().getTime(),
-            password: await this.encryptPassword(data.password)
-        });
+        data = Object.assign(
+            {}, data, {
+                createdAt: new Date().getTime(),
+                updatedAt: null,
+                revokeId: new Date().getTime(),
+                password: await this.encryptPassword(data.password)
+            }
+        );
 
         const result = await collection.updateOne(
-            { $or: [{ username: data.username }, { email: data.email }] },
-            { $setOnInsert: data },
-            { upsert: true }
+            {$or: [{username: data.username}, {email: data.email}]},
+            {$setOnInsert: data},
+            {upsert: true}
         );
 
         if (result.modifiedCount || result.upsertedId === null) {
@@ -45,8 +56,8 @@ class MongoStrategy implements UserStrategy {
 
         const collection = await db.getUsers();
         const result = await collection.updateOne(
-            { _id },
-            { $set: { revokeId: new Date().now() } },
+            {_id},
+            {$set: {revokeId: new Date().now()}},
             {}
         );
 
@@ -63,14 +74,14 @@ class MongoStrategy implements UserStrategy {
         }
         try {
             const collection = await db.getUsers();
-            return await collection.findOne({ _id: ObjectId(_id) });
+            return await collection.findOne({_id: new ObjectID(_id)});
         } catch (err) {
             throw new FetchingUserError('Fetching user failed');
         }
     }
 
     async findUser(username: string): Promise<UserModel> {
-        let where = { $or: [{ username }, { email: username }] };
+        let where = {$or: [{username}, {email: username}]};
 
         try {
             const collection = await db.getUsers();

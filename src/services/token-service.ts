@@ -1,50 +1,83 @@
 import * as jwt from 'jsonwebtoken';
-import * as NodeRsa from 'node-rsa';
 import UserService from './user-service';
-import { UserModel } from './user-service';
+
+export interface ITokenPayload {
+    sub: string;
+    revokeId: number;
+    iat?: number;
+    exp?: number;
+}
+
+export interface ITokenHeader {
+    sid: string;
+}
+
+export interface ITokenData {
+    header: {
+        sid: string;
+        alg?: string;
+        typ?: string;
+    };
+    payload: ITokenPayload;
+}
 
 export default class TokenService {
-    private rsa: NodeRsa;
     private userService: UserService;
 
-    constructor(userService) {
-        this.rsa = new NodeRsa({b:2048});
+    constructor(userService: UserService) {
         this.userService = userService;
     }
 
-    createToken(userModel: UserModel): Promise<string> {
-        return new Promise((resolve) => {
-            // TODO error handling
-            resolve(jwt.sign({revokeId: userModel.revokeId, sub: userModel._id}, this.rsa.exportKey(), {
-                algorithm: 'RS256',
-                expiresIn: '1d',
-                header: {
-                    sid: 123
-                }
-            }));
-        });
+    /**
+     *
+     * @param payload
+     * @param privateKey
+     * @param header
+     * @return {Promise<T>}
+     */
+    createToken(payload: ITokenPayload, privateKey: string, header: ITokenHeader): Promise<string> {
+        return new Promise(
+            resolve => {
+                // TODO error handling
+                resolve(
+                    jwt.sign(
+                        payload, privateKey, {
+                            algorithm: 'RS256',
+                            expiresIn: '1d',
+                            header
+                        }
+                    )
+                );
+            }
+        );
     }
 
-    verifyToken(token: string): Promise<boolean> {
-        return new Promise(async (resolve, reject) => {
-            // TODO error handling
-            const tokenData = jwt.verify(token, this.rsa.exportKey('public'));
+    decodeToken(token: string): ITokenData {
+        return jwt.decode(token, {complete: true});
+    }
 
-            if (tokenData instanceof Error) {
-                return reject(tokenData);
+    verifyToken(token: string, publicKey: string): Promise<boolean> {
+        return new Promise(
+            async(resolve, reject) => {
+                // TODO error handling
+                const tokenPayload = jwt.verify(token, publicKey) as ITokenPayload;
+
+                if (tokenPayload instanceof Error) {
+                    return reject(tokenPayload);
+                }
+
+                const userData = await this.userService.find(tokenPayload.sub);
+
+                if (!userData) {
+                    reject(new Error('User not found'));
+                } else if (userData instanceof Error) {
+                    reject(userData);
+                } else if (isNaN(tokenPayload.revokeId) || tokenPayload.revokeId !== userData.revokeId) {
+                    reject(new Error('Invalid Revoke Id'));
+                } else {
+                    resolve(true);
+                }
             }
-
-            const userData = await this.userService.find(tokenData.sub);
-
-            if (!userData) {
-                reject(new Error('User not found'));
-            } else if (userData instanceof Error) {
-                reject(userData);
-            } else if (isNaN(tokenData.revokeId) || tokenData.revokeId !== userData.revokeId) {
-                reject(new Error('Invalid Revoke Id'));
-            } else {
-                resolve(true);
-            }
-        });
+        );
     }
 }
