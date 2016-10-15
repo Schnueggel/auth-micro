@@ -11,7 +11,6 @@ import TokenService from './services/token-service';
 import { KeyStoreResult } from './services/key-store-service';
 import { Application } from '~express/lib/application';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { UserNotFoundError, InvalidRevokeId } from './errors/index';
 
 export interface App extends Application {
     keyStoreResult: KeyStoreResult
