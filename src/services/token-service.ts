@@ -1,11 +1,12 @@
 import * as jwt from 'jsonwebtoken';
-import UserService from './user-service';
 import { Algorithm } from 'jsonwebtoken';
 import * as EnvUtils from '../utils/env-utils';
+import { UserModel } from './user-service';
 
 export interface ITokenPayload {
     sub: string;
     revokeId: number;
+    refresh?: boolean;
     iat?: number;
     exp?: number;
 }
@@ -23,6 +24,11 @@ export interface ITokenData {
     payload: ITokenPayload;
 }
 
+export interface ITokens {
+    token: string;
+    refreshToken: string;
+}
+
 export interface IOptions {
     algorithm?: Algorithm;
     tokenExpire?: string;
@@ -30,11 +36,9 @@ export interface IOptions {
 }
 
 export default class TokenService {
-    private userService: UserService;
     private options: IOptions;
 
-    constructor(userService: UserService, options?: IOptions) {
-        this.userService = userService;
+    constructor(options?: IOptions) {
         this.setOptions(options);
     }
 
@@ -79,25 +83,45 @@ export default class TokenService {
         });
     }
 
-    verifyToken(token: string, publicKey: string): Promise<boolean> {
+    async createTokenFromUser(user: UserModel, privateKey: string, uuid: string): Promise<string> {
+        return await this.createToken({
+            sub: user._id,
+            revokeId: user.revokeId
+        }, privateKey, {
+            sid: uuid
+        });
+    }
+
+    async createTokensFromUser(user: UserModel, privateKey: string, uuid: string): Promise<ITokens> {
+        const token = await this.createTokenFromUser(user, privateKey, uuid);
+
+        const refreshToken = await this.createRefreshToken({
+            sub: user._id,
+            revokeId: user.revokeId,
+            refresh: true,
+        }, privateKey, {
+            sid: uuid
+        });
+
+        return {
+            token,
+            refreshToken
+        };
+    }
+
+    /**
+     * Verify token. Using the user data
+     * @param token
+     * @param publicKey
+     * @return {Promise<ITokenPayload>}
+     */
+    verifyToken(token: string, publicKey: string): Promise<ITokenPayload> {
         return new Promise(async(resolve, reject) => {
-            // TODO error handling
-            const tokenPayload = jwt.verify(token, publicKey) as ITokenPayload;
-
-            if (tokenPayload instanceof Error) {
-                return reject(tokenPayload);
-            }
-
-            const userData = await this.userService.find(tokenPayload.sub);
-
-            if (!userData) {
-                reject(new Error('User not found'));
-            } else if (userData instanceof Error) {
-                reject(userData);
-            } else if (isNaN(tokenPayload.revokeId) || tokenPayload.revokeId !== userData.revokeId) {
-                reject(new Error('Invalid Revoke Id'));
-            } else {
-                resolve(true);
+            try {
+                const tokenPayload = jwt.verify(token, publicKey) as ITokenPayload;
+                resolve(tokenPayload);
+            } catch(err) {
+                reject(err);
             }
         });
     }

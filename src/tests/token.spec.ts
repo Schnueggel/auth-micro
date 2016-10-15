@@ -13,12 +13,9 @@ describe('Test token', () => {
                 url: 'localhost:27017/auth-micro-test'
             });
             userService = new UserService(mongoStrategy);
-
-            tokenService = new TokenService(userService);
-
+            tokenService = new TokenService();
             const keyStoreStrategy = new MemoryStrategy();
             keyStoreService = new KeyStoreService(keyStoreStrategy);
-
             rsa = await keyStoreService.initRsa();
 
             await mongoStrategy.db.clearCollectionUser();

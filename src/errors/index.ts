@@ -37,3 +37,4 @@ export class UserNotFoundError extends Exception {}
 export class UserDataNotValidError extends Exception {}
 export class UserAlreadyExistError extends Exception {}
 export class FetchingUserError extends Exception {}
+export class InvalidRevokeId extends Exception {}
