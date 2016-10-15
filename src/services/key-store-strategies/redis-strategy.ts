@@ -2,6 +2,9 @@ import { KeyStoreStrategy } from '../key-store-service';
 import * as redis from 'redis';
 import { RedisClient } from 'redis';
 import * as EnvUtils from '../../utils/env-utils';
+import * as bluebird from 'bluebird';
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
 
 export interface IOptions {
     publicKeyTtl: number;
