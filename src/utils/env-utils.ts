@@ -20,3 +20,18 @@ export function getString(key: string, defaultValue?: string): string {
     }
     return defaultValue;
 }
+
+export function getBoolean(key: string, defaultValue?: boolean): boolean {
+    if (process.env[key]) {
+        if(process.env[key] === '0' || process.env[key] === 'false') {
+            return false;
+        }
+
+        if (process.env[key] === 'true' || process.env[key] === '1') {
+            return true;
+        }
+
+        console.warn(`Environment ${key} should be boolean type but found ${process.env[key]}`);
+    }
+    return defaultValue;
+}

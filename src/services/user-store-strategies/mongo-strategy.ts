@@ -7,6 +7,7 @@ import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
     url: string;
+    usernameRegex: RegExp;
     enableUsername: boolean;
     emailRegex: RegExp;
     passwordRegex: RegExp;
@@ -28,8 +29,10 @@ class MongoStrategy implements UserStoreStrategy {
     setOptions(options: IOptions) {
         this.options = Object.assign({
             emailRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_EMAIL_REGEX', /[^ @]*@[^ @]*/),
-            passwordRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_PASSWORD_REGEX', /.+/),
-            url: EnvUtils.getString('US_MONGO_STRATEGY__URL', 'localhost:27017/auth-micro')
+            usernameRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_USERNAME_REGEX', /^[a-zA-Z][0-9a-zA-Z]{1,20}$/),
+            passwordRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_PASSWORD_REGEX', /^.{8,250}$/),
+            url: EnvUtils.getString('US_MONGO_STRATEGY__URL', 'localhost:27017/auth-micro'),
+            enableUsername: EnvUtils.getBoolean('US_MONGO_STRATEGY_ENABLE_USERNAME', true),
         }, options);
     }
 
@@ -148,7 +151,7 @@ class MongoStrategy implements UserStoreStrategy {
             return new UserDataNotValidError('Invalid User data');
         } else if (this.options.passwordRegex.test(data.password) === false) {
             return new UserDataNotValidError('Invalid password');
-        } else if (this.options.enableUsername && (typeof data.username !== 'string' || data.username.length < 1 || data.username.indexOf('@') > -1)) {
+        } else if (this.options.enableUsername && this.options.usernameRegex.test(data.username) === false) {
             return new UserDataNotValidError('Invalid username');
         } else if (!this.options.emailRegex.test(data.email)) {
             return new UserDataNotValidError('Invalid email');
