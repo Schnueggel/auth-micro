@@ -1,53 +1,60 @@
-const assert = require('chai').assert;
-const userModel = require('../services/user');
-const db = require('../services/user-store-strategies/mongo-db');
-const config = require('../config');
+import { assert }  from 'chai';
+import MongoStrategy from '../services/user-store-strategies/mongo-strategy';
+import UserService from '../services/user-service';
+import config from '../config';
+import { UserAlreadyExistError, UserDataNotValidError } from '../errors/index';
 
 describe('Test user', () => {
-    before(async () => {
-        db.setDb(await db.createDb(config.MONGO_URL_TEST));
-        await db.clearCollectionUser();
+    let userService, mongoStrategy;
+    before(async() => {
+        mongoStrategy = new MongoStrategy();
+        userService = new UserService(mongoStrategy);
+        mongoStrategy.db.setDb(await mongoStrategy.db.createDb(config.MONGO_URL_TEST));
+        await mongoStrategy.db.clearCollectionUser();
     });
 
-    it('should create user', async () => {
+    it('should create user', async() => {
         const user = {
             email: 'test@test.de',
             username: 'test2',
             password: '12345678'
         };
-        const result = await userModel.createUser(user);
+        const result = await userService.createUser(user);
         assert.equal(result.email, user.email);
         assert.equal(result.username, user.username);
         assert.notEqual(result.password, user.password);
-        assert.isTrue(await userModel.comparePassword(user.password, result.password));
+        assert.isTrue(await mongoStrategy.comparePassword(user.password, result.password));
     });
 
-    it('should not create duplicate user', async () => {
+    it('should not create duplicate user', async() => {
         const user = {
             email: 'test@test.de',
             username: 'test2',
             password: '12345678'
         };
         try {
-            const result = await userModel.createUser(user);
+            const result = await userService.createUser(user);
             assert.isFalse(result);
         } catch (err) {
             assert.isTrue(err instanceof Error);
-            assert.equal(err.message, 'Creating user failed');
+            assert.isTrue(err instanceof UserAlreadyExistError);
+            assert.equal(err.message, 'User already exists');
         }
     });
 
-    it('should not create invalid user', async () => {
+    it('should not create invalid user', async() => {
         const user = {
             email: '',
             username: 'test2',
             password: '12345678'
         };
+
         try {
-            const result = await userModel.createUser(user);
+            const result = await userService.createUser(user);
             assert.isFalse(result);
         } catch (err) {
             assert.isTrue(err instanceof Error);
+            assert.isTrue(err instanceof UserDataNotValidError);
             assert.equal(err.message, 'Invalid email');
         }
     });

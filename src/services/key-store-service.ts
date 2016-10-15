@@ -31,6 +31,10 @@ export default class KeyStoreService {
         return this.strategy.del(key);
     }
 
+    /**
+     * Get the current rsa key or creates on if it does not exist
+     * @return {Promise<NodeRsa>}
+     */
     async getRsa(): Promise<NodeRsa> {
         if (this.rsa) {
             return Promise.resolve(this.rsa);

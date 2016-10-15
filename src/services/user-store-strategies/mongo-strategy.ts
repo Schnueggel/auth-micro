@@ -17,12 +17,12 @@ class MongoStrategy implements UserStrategy {
         }
     }
 
-    async createUser(data): Promise<UserModel> {
+    public async createUser(data): Promise<UserModel> {
         const validUserError = this.isValidUserData(data);
         if (validUserError instanceof UserDataNotValidError) {
             throw validUserError;
         }
-        const collection = await db.getUsers();
+        const collection = await this.db.getUsers();
 
         data = Object.assign(
             {}, data, {
@@ -45,16 +45,16 @@ class MongoStrategy implements UserStrategy {
         return await this.find(result.upsertedId._id);
     }
 
-    async updateUser(_id: string, data: UserData): Promise<UserModel> {
+    public async updateUser(_id: string, data: UserData): Promise<UserModel> {
         return Promise.reject(null);
     }
 
-    async revoke(_id: string): Promise<boolean> {
+    public async revoke(_id: string): Promise<boolean> {
         if (!_id) {
             throw new Error('Invalid argument _id');
         }
 
-        const collection = await db.getUsers();
+        const collection = await this.db.getUsers();
         const result = await collection.updateOne(
             {_id},
             {$set: {revokeId: new Date().now()}},
@@ -68,24 +68,29 @@ class MongoStrategy implements UserStrategy {
         return true;
     }
 
-    async find(_id: string): Promise<UserModel> {
+    public async find(_id: string | ObjectID): Promise<UserModel> {
         if (!_id) {
             throw null;
         }
+
+        if (typeof _id === 'string') {
+            _id = new ObjectID(_id as string);
+        }
+
         try {
-            const collection = await db.getUsers();
-            return await collection.findOne({_id: new ObjectID(_id)});
+            const collection = await this.db.getUsers();
+            return await collection.find({_id}).limit(1).next().then(result => result);
         } catch (err) {
             throw new FetchingUserError('Fetching user failed');
         }
     }
 
-    async findUser(username: string): Promise<UserModel> {
+    public async findUser(username: string): Promise<UserModel> {
         let where = {$or: [{username}, {email: username}]};
 
         try {
-            const collection = await db.getUsers();
-            return await collection.findOne(where);
+            const collection = await this.db.getUsers();
+            return await collection.find(where).limit(1).next().then(result => result);
         } catch (err) {
             console.error(err);
             throw new Error('Fetching user failed');
@@ -93,11 +98,11 @@ class MongoStrategy implements UserStrategy {
 
     }
 
-    async deleteUser(_id: string): Promise<UserModel> {
+    public async deleteUser(_id: string): Promise<UserModel> {
         return Promise.reject(null);
     }
 
-    encryptPassword(password: string): Promise<string> {
+    public encryptPassword(password: string): Promise<string> {
         return new Promise(
             (resolve, reject) => {
                 const salt = bcrypt.genSaltSync(10);
@@ -107,7 +112,7 @@ class MongoStrategy implements UserStrategy {
         );
     }
 
-    comparePassword(password: string, current: string): Promise<string> {
+    public comparePassword(password: string, current: string): Promise<string> {
         return new Promise(
             (resolve, reject) => {
                 const equal = bcrypt.compareSync(password, current);
@@ -120,7 +125,7 @@ class MongoStrategy implements UserStrategy {
         );
     }
 
-    isValidUserData(data: UserData): UserDataNotValidError {
+    public isValidUserData(data: UserData): UserDataNotValidError {
         if (typeof data !== 'object') {
             return new UserDataNotValidError('Invalid User data');
         } else if (typeof data.password !== 'string' || data.password.length < config.PASSWORD_LENGTH) {
