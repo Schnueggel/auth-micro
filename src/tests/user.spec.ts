@@ -1,15 +1,15 @@
 import { assert }  from 'chai';
 import MongoStrategy from '../services/user-store-strategies/mongo-strategy';
 import UserService from '../services/user-service';
-import config from '../config';
 import { UserAlreadyExistError, UserDataNotValidError } from '../errors/index';
 
 describe('Test user', () => {
     let userService, mongoStrategy;
     before(async() => {
-        mongoStrategy = new MongoStrategy();
+        mongoStrategy = new MongoStrategy({
+            url: 'localhost:27017/auth-micro-test'
+        });
         userService = new UserService(mongoStrategy);
-        mongoStrategy.db.setDb(await mongoStrategy.db.createDb(config.MONGO_URL_TEST));
         await mongoStrategy.db.clearCollectionUser();
     });
 

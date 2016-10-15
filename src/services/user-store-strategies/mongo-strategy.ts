@@ -6,24 +6,20 @@ import MongoDb from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
-    url: string;
-    usernameRegex: RegExp;
-    enableUsername: boolean;
-    emailRegex: RegExp;
-    passwordRegex: RegExp;
+    url?: string;
+    usernameRegex?: RegExp;
+    enableUsername?: boolean;
+    emailRegex?: RegExp;
+    passwordRegex?: RegExp;
 }
 
 class MongoStrategy implements UserStoreStrategy {
     private options: IOptions;
     public db: MongoDb;
 
-    constructor(db?: MongoDb, options?: IOptions) {
+    constructor(options?: IOptions) {
         this.setOptions(options);
-        if (!db) {
-            this.db = new MongoDb(this.options);
-        } else {
-            this.db = db;
-        }
+        this.db = new MongoDb(this.options);
     }
 
     setOptions(options: IOptions) {
@@ -119,17 +115,16 @@ class MongoStrategy implements UserStoreStrategy {
 
     }
 
-
-    public async findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel> {
-        let where = {$or: [{usernameOrEmail}, {email: usernameOrEmail}]};
+    public async findUsernamePassword(username: string, password: string): Promise<UserModel> {
+        let where = {$or: [{username}, {email: username}]};
 
         try {
             const collection = await this.db.getUsers();
             const user: UserModel = await collection.find(where).limit(1).next().then(result => result);
-            if (!user || !this.comparePassword(password, user.password)) {
+
+            if (!user || !await this.comparePassword(password, user.password)) {
                 return null;
             }
-
             return user;
         } catch (err) {
             console.error(err);
@@ -152,17 +147,15 @@ class MongoStrategy implements UserStoreStrategy {
         );
     }
 
-    public comparePassword(password: string, current: string): Promise<string> {
-        return new Promise(
-            (resolve, reject) => {
-                const equal = bcrypt.compareSync(password, current);
-                if (equal) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
+    public comparePassword(password: string, current: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            const equal = bcrypt.compareSync(password, current);
+            if (equal) {
+                resolve(true);
+            } else {
+                resolve(false);
             }
-        );
+        });
     }
 
     public isValidUserData(data: UserData): UserDataNotValidError {

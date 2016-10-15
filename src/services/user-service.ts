@@ -49,6 +49,12 @@ export default class UserService {
         return await this.strategy.findUser(usernameOrEmail);
     }
 
+    /**
+     *
+     * @param usernameOrEmail
+     * @param password
+     * @return {UserModel}
+     */
     async findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel> {
         return await this.strategy.findUsernamePassword(usernameOrEmail, password);
     }

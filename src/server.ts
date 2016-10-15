@@ -40,39 +40,46 @@ app.post('/auth', bodyParserJson, async (req: AppRequest, res: Response) => {
         return;
     }
 
-    const user = await userService.findUsernamePassword(req.body.username, req.body.password);
+    try {
+        const user = await userService.findUsernamePassword(req.body.username, req.body.password);
 
-    if (!user) {
-        res.status(401);
-        res.json({
-            message: 'Auth failed'
+        if (!user) {
+            res.status(401);
+            res.json({
+                message: 'Auth failed'
+            });
+            return;
+        }
+
+        const token = await tokenService.createToken({
+            sub: user._id,
+            revokeId: user.revokeId
+        }, req.app.keyStoreResult.privateKey, {
+            sid: req.app.keyStoreResult.uid
         });
-        return
+
+        const refreshToken = await tokenService.createRefreshToken({
+            sub: user._id,
+            revokeId: user.revokeId
+        }, req.app.keyStoreResult.privateKey, {
+            sid: req.app.keyStoreResult.uid
+        });
+
+        res.json({
+            token,
+            refreshToken
+        });
+    } catch(err) {
+        console.error(err);
+        res.status(500);
+        res.send(err.message);
     }
-
-    const token = await tokenService.createToken({
-        sub: user._id,
-        revokeId: user.revokeId
-    }, req.app.keyStoreResult.privateKey, {
-        sid: req.app.keyStoreResult.uid
-    });
-
-    const refreshToken = await tokenService.createRefreshToken({
-        sub: user._id,
-        revokeId: user.revokeId
-    }, req.app.keyStoreResult.privateKey, {
-        sid: req.app.keyStoreResult.uid
-    });
-
-    res.json({
-        token,
-        refreshToken
-    });
 });
 
 export async function start() {
     app.keyStoreResult = await keyStoreService.initRsa();
-    app.listen(config.PORT || 9999, function () {});
+    app.listen(config.PORT, function () {});
+    console.log('Server started at port ' + config.PORT);
 }
 
 if (!module.parent) {

@@ -2,7 +2,7 @@ import { Db, Collection } from 'mongodb';
 import * as mongodb from 'mongodb';
 
 export interface IOptions {
-    url: string;
+    url?: string;
 }
 
 export default class MongoDb {
