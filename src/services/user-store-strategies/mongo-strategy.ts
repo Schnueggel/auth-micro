@@ -25,7 +25,9 @@ class MongoStrategy implements UserStrategy {
         const collection = await this.db.getUsers();
 
         data = Object.assign(
-            {}, data, {
+            {
+                isAdmin: false
+            }, data, {
                 createdAt: new Date().getTime(),
                 updatedAt: null,
                 revokeId: new Date().getTime(),
