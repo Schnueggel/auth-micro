@@ -1,9 +1,26 @@
 import { KeyStoreStrategy } from '../key-store-service';
-import config from '../../config';
 
+export interface IOptions {
+    publicKeyTtl: number;
+}
+
+/**
+ * Strategy for saving keys in memory.
+ */
 export default class MemoryStrategy implements KeyStoreStrategy {
     private store: {[index: string]: string} = {};
     private timeouts: {[index: string]: number} = {};
+    private options: IOptions;
+
+    constructor(options?: IOptions) {
+        this.setOptions(options);
+    }
+
+    setOptions(options: IOptions) {
+        this.options = Object.assign({
+            publicKeyTtl: 3600
+        }, options);
+    }
 
     get(key: string): Promise<string> {
         return new Promise(
@@ -16,7 +33,7 @@ export default class MemoryStrategy implements KeyStoreStrategy {
     set(key: string, value: string, ttl: number): Promise<string> {
         return new Promise(
             (resolve) => {
-                ttl = ttl || config.PUBLIC_KEY_TTL || 3600;
+                ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
                 if (this.store[key]) {
                     clearTimeout(this.timeouts[key]);
                 }

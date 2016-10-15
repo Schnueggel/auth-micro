@@ -1,19 +1,28 @@
 import { KeyStoreStrategy } from '../key-store-service';
 import * as redis from 'redis';
-import config from '../../config';
 import { RedisClient } from 'redis';
-import { ClientOptions } from 'redis';
+
+export interface IOptions {
+    publicKeyTtl: number;
+    host: string;
+    port: number;
+}
 
 export default class RedisStrategy implements KeyStoreStrategy {
     private client: RedisClient;
+    private options: IOptions;
 
-    constructor(options: ClientOptions) {
-        this.client = redis.createClient(
-            options || {
-                host: config.REDIS_HOST,
-                port: Number(config.REDIS_PORT)
-            }
-        );
+    constructor(options?: IOptions) {
+        this.setOptions(options);
+        this.client = redis.createClient(this.options);
+    }
+
+    setOptions(options: IOptions) {
+        this.options = Object.assign({
+            publicKeyTtl: 3600,
+            host: 'localhost',
+            port: 6379
+        }, options);
     }
 
     get(key: string): Promise<string> {
@@ -21,12 +30,12 @@ export default class RedisStrategy implements KeyStoreStrategy {
     }
 
     set(key: string, value: string, ttl?: number): Promise<string> {
-        return this.client.setAsync(key, value).then(
-            result => {
-                this.client.expire(key, ttl || config.PUBLIC_KEY_TTL || 3600);
+        return this.client.setAsync(key, value)
+            .then(() => {
+                ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
+                this.client.expire(key, ttl);
                 return key;
-            }
-        );
+            });
     }
 
     del(key: string): Promise<boolean> {

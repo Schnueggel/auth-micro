@@ -1,15 +1,23 @@
 import { Db, Collection } from 'mongodb';
-import config from './../../config';
 import * as mongodb from 'mongodb';
 
-class MongoDb {
+export interface IOptions {
+    url: string;
+}
+
+export default class MongoDb {
     private db: Db;
+    private options: IOptions;
+
+    constructor(options?: IOptions) {
+        this.options = options;
+    }
 
     async getDb(): Promise<Db> {
         if (this.db) {
             return this.db;
         }
-        return this.db = await this.createDb(config.MONGO_URL);
+        return this.db = await this.createDb(this.options.url);
     }
 
     setDb(db: Db): void {
@@ -37,5 +45,3 @@ class MongoDb {
         return await this.clearCollection('users');
     }
 }
-
-export default MongoDb;

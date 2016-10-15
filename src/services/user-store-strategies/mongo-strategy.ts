@@ -1,20 +1,35 @@
 import { UserStrategy, UserModel, UserData } from '../user-service';
-import config from './../../config';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
 import MongoDb from './mongo-db';
 
+export interface IOptions {
+    url: string;
+    enableUsername: boolean;
+    emailRegex: RegExp;
+    passwordRegex: RegExp;
+}
+
 class MongoStrategy implements UserStrategy {
-    private emailRegex: RegExp = /[^ @]*@[^ @]*/;
+    private options: IOptions;
     public db: MongoDb;
 
-    constructor(db?: MongoDb) {
+    constructor(db?: MongoDb, options?: IOptions) {
+        this.setOptions(options);
         if (!db) {
-            this.db = new MongoDb();
+            this.db = new MongoDb(this.options);
         } else {
             this.db = db;
         }
+    }
+
+    setOptions(options: IOptions) {
+        this.options = Object.assign({
+            emailRegex: /[^ @]*@[^ @]*/,
+            passwordRegex: /.+/,
+            url: 'localhost:27017/auth-micro'
+        }, options);
     }
 
     public async createUser(data): Promise<UserModel> {
@@ -130,15 +145,11 @@ class MongoStrategy implements UserStrategy {
     public isValidUserData(data: UserData): UserDataNotValidError {
         if (typeof data !== 'object') {
             return new UserDataNotValidError('Invalid User data');
-        } else if (typeof data.password !== 'string' || data.password.length < config.PASSWORD_LENGTH) {
-            return new UserDataNotValidError('Invalid password. Minimum length ' + config.PASSWORD_LENGTH);
-        } else if (data.password.length > 250) {
-            return new UserDataNotValidError('Invalid password. Maximum length 250');
-        } else if (new RegExp(config.PASSWORD_REGEX).test(data.password) === false) {
+        } else if (this.options.passwordRegex.test(data.password) === false) {
             return new UserDataNotValidError('Invalid password');
-        } else if (config.ENABLE_USERNAME && (typeof data.username !== 'string' || data.username.length < 1 || data.username.indexOf('@') > -1)) {
+        } else if (this.options.enableUsername && (typeof data.username !== 'string' || data.username.length < 1 || data.username.indexOf('@') > -1)) {
             return new UserDataNotValidError('Invalid username');
-        } else if (!this.emailRegex.test(data.email)) {
+        } else if (!this.options.emailRegex.test(data.email)) {
             return new UserDataNotValidError('Invalid email');
         }
 
