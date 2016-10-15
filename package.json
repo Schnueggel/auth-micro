@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.1.9",
@@ -20,7 +21,10 @@
   },
   "scripts": {
     "test": "mocha ./dist/**/*.spec.js --recursive",
-    "start": "node dist/server.js",
+    "start": "pm2 start dist/server.js --name=auth-micro",
+    "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
+    "log": "pm2 log auth-micro",
+    "stop": "pm2 stop auth-micro",
     "build": "tsc --rootDir src --outDir dist",
     "build:watch": "tsc --rootDir src --outDir dist -w"
   },
