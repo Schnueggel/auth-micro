@@ -11,6 +11,7 @@ export interface UserStoreStrategy {
 
 export interface UserModel extends UserData {
     createdAt: number;
+    deletedAt: number;
     updatedAt: number;
     revokeId: number;
 }
@@ -18,6 +19,9 @@ export interface UserModel extends UserData {
 export interface UserData {
     _id?: string;
     email: string;
+    deleted: boolean;
+    disabled: boolean;
+    isAdmin: boolean;
     username?: string;
     password: string;
 }

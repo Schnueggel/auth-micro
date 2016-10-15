@@ -41,10 +41,13 @@ class MongoStrategy implements UserStoreStrategy {
 
         data = Object.assign(
             {
-                isAdmin: false
+                isAdmin: false,
+                deleted: false,
+                disabled: false
             }, data, {
                 createdAt: new Date().getTime(),
                 updatedAt: null,
+                deletedAt: null,
                 revokeId: new Date().getTime(),
                 password: await this.encryptPassword(data.password)
             }
