@@ -1,13 +1,7 @@
 
 interface Env {
     PORT: string;
-    MONGO_URL: string;
-    MONGO_URL_TEST: string;
-    REDIS_HOST: string;
-    REDIS_PORT: string;
     KEY_STORE_STRATEGY: string;
-    ENABLE_USERNAME: string;
-    PASSWORD_LENGTH: string;
     USER_STORE_STRATEGY: string;
     [key: string]: string;
     PATH: string;
@@ -15,23 +9,10 @@ interface Env {
 
 export default {
     PORT: Number(getEnv().PORT) || 9999,
-    MONGO_URL: getEnv().MONGO_URL || 'localhost:27017/auth-micro',
-    MONGO_URL_TEST: getEnv().MONGO_URL_TEST || 'localhost:27017/auth-micro-test',
-    REDIS_HOST: getEnv().REDIS_HOST || 'localhost',
-    REDIS_PORT: Number(getEnv().REDIS_PORT) || 6379,
     KEY_STORE_STRATEGY: getEnv().KEY_STORE_STRATEGY || 'redis',
-    PUBLIC_KEY_TTL: 60 * 60 * 24 * 40,
-    ENABLE_USERNAME: falsyEnv(getEnv().ENABLE_USERNAME),
-    PASSWORD_LENGTH: getEnv().PASSWORD_LENGTH || 8,
-    PASSWORD_REGEX: '.+',
     USER_STORE_STRATEGY: getEnv().USER_STORE_STRATEGY || 'mongo-strategy'
 };
-
-function falsyEnv(value: string): string {
-    return (value !== '0' && value !== 'false' && value);
-}
 
 export function getEnv(): Env {
     return process.env as Env;
 }
-

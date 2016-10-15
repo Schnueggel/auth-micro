@@ -7,9 +7,15 @@ export interface KeyStoreStrategy {
     set(key: string, value: string, ttl?: number): Promise<string>;
 }
 
+export interface KeyStoreResult {
+    publicKey: string;
+    privateKey: string;
+    uid: string;
+}
+
 export default class KeyStoreService {
     private strategy: KeyStoreStrategy;
-    public rsa: NodeRsa;
+    private keyStoreResult:KeyStoreResult;
 
     constructor(strategy: KeyStoreStrategy) {
         this.strategy = strategy;
@@ -19,8 +25,16 @@ export default class KeyStoreService {
         return this.strategy.get(key);
     }
 
+    /**
+     * Stores the given (public) key and returns the generated uid
+     * @param key (public) key to store
+     * @return {Promise<string>}
+     */
     store(key): Promise<string> {
-        return this.hashKey(key).then(hash => this.strategy.set(hash, key));
+        return this.hashKey(key).then(uid => {
+            this.strategy.set(uid, key);
+            return uid;
+        });
     }
 
     hashKey(key): Promise<string> {
@@ -32,23 +46,29 @@ export default class KeyStoreService {
     }
 
     /**
-     * Get the current rsa key or creates on if it does not exist
-     * @return {Promise<NodeRsa>}
+     * Get the current rsa keys or creates them if they do not exist
+     * @return {Promise<KeyStoreResult>}
      */
-    async getRsa(): Promise<NodeRsa> {
-        if (this.rsa) {
-            return Promise.resolve(this.rsa);
+    async getRsa(): Promise<KeyStoreResult> {
+        if (this.keyStoreResult) {
+            return Promise.resolve(this.keyStoreResult);
         }
         return this.initRsa();
     }
 
     /**
      * This should only be called once during app start
-     * @return {Promise<NodeRsa>}
+     * @return {Promise<KeyStoreResult>}
      */
-    async initRsa(): Promise<NodeRsa> {
-        this.rsa = new NodeRsa({b: 2048});
-        await this.store(this.rsa.exportKey('public'));
-        return Promise.resolve(this.rsa);
+    async initRsa(): Promise<KeyStoreResult> {
+        const rsa = new NodeRsa({b: 2048});
+        const publicKey = rsa.exportKey('public');
+        const uid = await this.store(publicKey);
+        this.keyStoreResult = {
+            uid,
+            publicKey,
+            privateKey: rsa.exportKey()
+        };
+        return Promise.resolve(this.keyStoreResult);
     }
 }

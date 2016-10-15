@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^0.8.7",
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.10",

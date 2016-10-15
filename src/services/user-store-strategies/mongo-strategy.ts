@@ -119,6 +119,25 @@ class MongoStrategy implements UserStoreStrategy {
 
     }
 
+
+    public async findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel> {
+        let where = {$or: [{usernameOrEmail}, {email: usernameOrEmail}]};
+
+        try {
+            const collection = await this.db.getUsers();
+            const user: UserModel = await collection.find(where).limit(1).next().then(result => result);
+            if (!user || !this.comparePassword(password, user.password)) {
+                return null;
+            }
+
+            return user;
+        } catch (err) {
+            console.error(err);
+            throw new Error('Fetching user failed');
+        }
+
+    }
+
     public async deleteUser(_id: string): Promise<UserModel> {
         return Promise.reject(null);
     }

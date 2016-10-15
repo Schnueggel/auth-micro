@@ -5,6 +5,7 @@ export interface UserStoreStrategy {
     revoke(_id: string): Promise<boolean>;
     find(_id: string): Promise<UserModel>;
     findUser(usernameOrEmail: string): Promise<UserModel>;
+    findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel>;
     deleteUser(_id: string): Promise<UserModel>;
 }
 
@@ -46,6 +47,10 @@ export default class UserService {
 
     async findUser(usernameOrEmail: string): Promise<UserModel> {
         return await this.strategy.findUser(usernameOrEmail);
+    }
+
+    async findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel> {
+        return await this.strategy.findUsernamePassword(usernameOrEmail, password);
     }
 
     async deleteUser(_id: string): Promise<UserModel> {
