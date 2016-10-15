@@ -1,4 +1,5 @@
 import { KeyStoreStrategy } from '../key-store-service';
+import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
     publicKeyTtl: number;
@@ -18,7 +19,7 @@ export default class MemoryStrategy implements KeyStoreStrategy {
 
     setOptions(options: IOptions) {
         this.options = Object.assign({
-            publicKeyTtl: 3600
+            publicKeyTtl: EnvUtils.getNumber('KS_MEMORY_STRATEGY_PUBLIC_KEY_TTL', 3600)
         }, options);
     }
 

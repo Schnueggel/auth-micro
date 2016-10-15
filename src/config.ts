@@ -8,6 +8,7 @@ interface Env {
     KEY_STORE_STRATEGY: string;
     ENABLE_USERNAME: string;
     PASSWORD_LENGTH: string;
+    USER_STORE_STRATEGY: string;
     [key: string]: string;
     PATH: string;
 }
@@ -22,7 +23,8 @@ export default {
     PUBLIC_KEY_TTL: 60 * 60 * 24 * 40,
     ENABLE_USERNAME: falsyEnv(getEnv().ENABLE_USERNAME),
     PASSWORD_LENGTH: getEnv().PASSWORD_LENGTH || 8,
-    PASSWORD_REGEX: '.+'
+    PASSWORD_REGEX: '.+',
+    USER_STORE_STRATEGY: getEnv().USER_STORE_STRATEGY || 'mongo-strategy'
 };
 
 function falsyEnv(value: string): string {
@@ -32,3 +34,4 @@ function falsyEnv(value: string): string {
 export function getEnv(): Env {
     return process.env as Env;
 }
+

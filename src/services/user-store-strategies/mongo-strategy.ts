@@ -1,8 +1,9 @@
-import { UserStrategy, UserModel, UserData } from '../user-service';
+import { UserStoreStrategy, UserModel, UserData } from '../user-service';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
 import MongoDb from './mongo-db';
+import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
     url: string;
@@ -11,7 +12,7 @@ export interface IOptions {
     passwordRegex: RegExp;
 }
 
-class MongoStrategy implements UserStrategy {
+class MongoStrategy implements UserStoreStrategy {
     private options: IOptions;
     public db: MongoDb;
 
@@ -26,9 +27,9 @@ class MongoStrategy implements UserStrategy {
 
     setOptions(options: IOptions) {
         this.options = Object.assign({
-            emailRegex: /[^ @]*@[^ @]*/,
-            passwordRegex: /.+/,
-            url: 'localhost:27017/auth-micro'
+            emailRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_EMAIL_REGEX', /[^ @]*@[^ @]*/),
+            passwordRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_PASSWORD_REGEX', /.+/),
+            url: EnvUtils.getString('US_MONGO_STRATEGY__URL', 'localhost:27017/auth-micro')
         }, options);
     }
 

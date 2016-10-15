@@ -1,5 +1,5 @@
 
-export interface UserStrategy {
+export interface UserStoreStrategy {
     createUser(data: UserData): Promise<UserModel>;
     updateUser(_id: string, data: UserData);
     revoke(_id: string): Promise<boolean>;
@@ -22,9 +22,9 @@ export interface UserData {
 }
 
 export default class UserService {
-    private strategy: UserStrategy;
+    private strategy: UserStoreStrategy;
 
-    constructor(strategy: UserStrategy) {
+    constructor(strategy: UserStoreStrategy) {
         this.strategy = strategy;
     }
 

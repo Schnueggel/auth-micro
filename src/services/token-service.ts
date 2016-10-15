@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import UserService from './user-service';
 import { Algorithm } from 'jsonwebtoken';
+import * as EnvUtils from '../utils/env-utils';
 
 export interface ITokenPayload {
     sub: string;
@@ -39,9 +40,9 @@ export default class TokenService {
 
     public setOptions(options: IOptions) {
         this.options = Object.assign({
-            algorithm: 'RS256',
-            tokenExpire: '1d',
-            refreshExpire: '30d'
+            algorithm: EnvUtils.getString('TOKEN_SERVICE_ALGORITHM', 'RS256'),
+            tokenExpire: EnvUtils.getString('TOKEN_SERVICE_TOKEN_EXPIRE', '1d'),
+            refreshExpire: EnvUtils.getString('TOKEN_SERVICE_REFRESH_EXPIRE', '30d'),
         }, options);
     }
 

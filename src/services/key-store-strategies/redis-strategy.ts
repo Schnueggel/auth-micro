@@ -1,6 +1,7 @@
 import { KeyStoreStrategy } from '../key-store-service';
 import * as redis from 'redis';
 import { RedisClient } from 'redis';
+import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
     publicKeyTtl: number;
@@ -19,9 +20,9 @@ export default class RedisStrategy implements KeyStoreStrategy {
 
     setOptions(options: IOptions) {
         this.options = Object.assign({
-            publicKeyTtl: 3600,
-            host: 'localhost',
-            port: 6379
+            publicKeyTtl: EnvUtils.getNumber('KS_REDIS_STRATEGY_PUBLIC_KEY_TTL', 3600),
+            host: EnvUtils.getString('KS_REDIS_STRATEGY_HOST', 'localhost'),
+            port: EnvUtils.getNumber('KS_REDIS_STRATEGY_PORT', 6379),
         }, options);
     }
 
