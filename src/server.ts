@@ -10,13 +10,13 @@ import { ParsedAsJson } from 'body-parser';
 import TokenService from './services/token-service';
 import { KeyStoreResult } from './services/key-store-service';
 import { Application } from '~express/lib/application';
-import { TokenExpiredError } from 'jsonwebtoken';
+import { tokenExists, tokenVerifyCreator, userFromTokenCreator, IUserRequest } from './middleware/token-middleware';
 
 export interface App extends Application {
     keyStoreResult: KeyStoreResult
 }
 
-export interface AppRequest extends Request, ParsedAsJson {
+export interface IAppRequest extends Request, ParsedAsJson {
     app: App;
 }
 
@@ -30,9 +30,12 @@ const userService = new UserService(userStrategy);
 const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY);
 const keyStoreService = new KeyStoreService(keyStoreStrategy);
 
-const tokenService = new TokenService(userService);
+const tokenService = new TokenService();
 
-app.post('/auth', bodyParserJson, async(req: AppRequest, res: Response) => {
+const tokenVerify = tokenVerifyCreator(tokenService, keyStoreService);
+const userFromToken = userFromTokenCreator(userService);
+
+app.post('/auth', bodyParserJson, async(req: IAppRequest, res: Response) => {
     if (!req.body.username || !req.body.password) {
         res.status(400);
         res.json({
@@ -62,18 +65,9 @@ app.post('/auth', bodyParserJson, async(req: AppRequest, res: Response) => {
     }
 });
 
-app.post('/refresh', bodyParserJson, async(req: AppRequest, res: Response) => {
-    if (!req.body.token) {
-        res.status(400);
-        res.json({
-            message: 'Invalid Data'
-        });
-        return;
-    }
+app.post('/refresh', bodyParserJson, tokenExists, tokenVerify, userFromToken, async(req: IUserRequest, res: Response) => {
     try {
-        const tokenData = await tokenService.decodeToken(req.body.token);
-
-        if (!tokenData || !tokenData.payload.refresh) {
+        if (!req.tokenData.payload.refresh) {
             res.status(400);
             res.json({
                 message: 'Not a refresh token'
@@ -81,47 +75,51 @@ app.post('/refresh', bodyParserJson, async(req: AppRequest, res: Response) => {
             return;
         }
 
-        const publicKey = await keyStoreService.get(tokenData.header.sid);
-
-        if (!publicKey) {
-            res.status(401);
-            res.json({
-                message: 'Token lost'
-            });
-            return;
-        }
-
-        await tokenService.verifyToken(req.body.token, publicKey);
-
-        const user = await userService.find(tokenData.payload.sub);
-
-        // TODO handle user delete disabled
-        if (!user) {
-            res.status(401);
-            res.json({message: 'User not found'});
-            return;
-        }
-
-        const token = await tokenService.createTokenFromUser(user, req.app.keyStoreResult.privateKey, req.app.keyStoreResult.uid);
+        const token = await tokenService.createTokenFromUser(req.user, req.app.keyStoreResult.privateKey, req.app.keyStoreResult.uid);
 
         res.json({token});
     } catch (err) {
-        if (err instanceof TokenExpiredError) {
-            res.status(401);
-            res.json({message: 'Token expired'});
-        } else if (err) {
-            console.error(err);
-            res.status(500);
+        console.error(err);
+        res.status(500);
+        res.json({message: 'Service failed'});
+    }
+});
+
+app.delete('/user/:id', bodyParserJson, tokenExists, tokenVerify, userFromToken, async(req: IUserRequest, res: Response) => {
+    try {
+        const userId = String(req.user._id);
+        if (userId !== req.params['id'] && !req.user.isAdmin) {
+            res.status(403);
+            res.json({
+                message: 'Not enough permissions'
+            });
         }
-        res.json({message:'Service failed'});
+
+        let deleted: boolean;
+        if (config.TRUE_DELETE_ENABLED) {
+            deleted = await userService.deleteUser(userId);
+        } else {
+            console.log(await userService.updateUser(userId, {deleted: true}));
+            deleted = !!(await userService.updateUser(userId, {deleted: true}));
+
+        }
+
+        if (deleted) {
+            res.status(200);
+            res.end();
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500);
+        res.json({message: 'Service failed'});
     }
 });
 
 export async function start() {
     app.keyStoreResult = await keyStoreService.initRsa();
     app.listen(config.PORT, function () {
+        console.log('Server started at port ' + config.PORT);
     });
-    console.log('Server started at port ' + config.PORT);
 }
 
 if (!module.parent) {

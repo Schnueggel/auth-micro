@@ -1,29 +1,29 @@
 
 export interface UserStoreStrategy {
-    createUser(data: UserData): Promise<UserModel>;
-    updateUser(_id: string, data: UserData);
+    createUser(data: IUserData): Promise<IUserModel>;
+    updateUser(_id: string, data: IUserData);
     revoke(_id: string): Promise<boolean>;
-    find(_id: string): Promise<UserModel>;
-    findUser(usernameOrEmail: string): Promise<UserModel>;
-    findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel>;
-    deleteUser(_id: string): Promise<UserModel>;
+    find(_id: string): Promise<IUserModel>;
+    findUser(usernameOrEmail: string): Promise<IUserModel>;
+    findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel>;
+    deleteUser(_id: string): Promise<boolean>;
 }
 
-export interface UserModel extends UserData {
+export interface IUserModel extends IUserData {
     createdAt: number;
     deletedAt: number;
     updatedAt: number;
     revokeId: number;
 }
 
-export interface UserData {
+export interface IUserData {
     _id?: string;
-    email: string;
-    deleted: boolean;
-    disabled: boolean;
-    isAdmin: boolean;
+    email?: string;
+    deleted?: boolean;
+    disabled?: boolean;
+    isAdmin?: boolean;
     username?: string;
-    password: string;
+    password?: string;
 }
 
 export default class UserService {
@@ -33,11 +33,11 @@ export default class UserService {
         this.strategy = strategy;
     }
 
-    async createUser(data: UserData): Promise<UserModel> {
+    async createUser(data: IUserData): Promise<IUserModel> {
         return await this.strategy.createUser(data);
     }
 
-    async updateUser(_id: string, data: UserData): Promise<UserModel> {
+    async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
         return await this.strategy.updateUser(_id, data);
     }
 
@@ -45,11 +45,11 @@ export default class UserService {
         return await this.strategy.revoke(_id);
     }
 
-    async find(_id: string): Promise<UserModel> {
+    async find(_id: string): Promise<IUserModel> {
         return await this.strategy.find(_id);
     }
 
-    async findUser(usernameOrEmail: string): Promise<UserModel> {
+    async findUser(usernameOrEmail: string): Promise<IUserModel> {
         return await this.strategy.findUser(usernameOrEmail);
     }
 
@@ -57,13 +57,13 @@ export default class UserService {
      *
      * @param usernameOrEmail
      * @param password
-     * @return {UserModel}
+     * @return {IUserModel}
      */
-    async findUsernamePassword(usernameOrEmail: string, password: string): Promise<UserModel> {
+    async findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel> {
         return await this.strategy.findUsernamePassword(usernameOrEmail, password);
     }
 
-    async deleteUser(_id: string): Promise<UserModel> {
+    async deleteUser(_id: string): Promise<boolean> {
         return await this.strategy.deleteUser(_id);
     }
 }

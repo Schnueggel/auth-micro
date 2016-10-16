@@ -1,9 +1,10 @@
-import { UserStoreStrategy, UserModel, UserData } from '../user-service';
+import { UserStoreStrategy, IUserModel, IUserData } from '../user-service';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
 import MongoDb from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
+import { FindOneAndReplaceOption } from 'mongodb';
 
 export interface IOptions {
     url?: string;
@@ -32,7 +33,7 @@ class MongoStrategy implements UserStoreStrategy {
         }, options);
     }
 
-    public async createUser(data): Promise<UserModel> {
+    public async createUser(data): Promise<IUserModel> {
         const validUserError = this.isValidUserData(data);
         if (validUserError instanceof UserDataNotValidError) {
             throw validUserError;
@@ -65,8 +66,27 @@ class MongoStrategy implements UserStoreStrategy {
         return await this.find(result.upsertedId._id);
     }
 
-    public async updateUser(_id: string, data: UserData): Promise<UserModel> {
-        return Promise.reject(null);
+    public async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
+        const collection = await this.db.getUsers();
+        data = Object.assign({}, data, {updatedAt: new Date().getTime()});
+
+        const isValid = this.isValidUserData(data, true);
+
+        if (isValid instanceof Error) {
+            throw isValid;
+        }
+
+        const result = await collection.findOneAndUpdate(
+            {_id: new ObjectID(_id)},
+            {$set: data},
+            {returnNewDocument: true} as FindOneAndReplaceOption
+        );
+
+        if (!result.ok) {
+            throw new Error('Updating user failed');
+        }
+
+        return result.value as IUserModel;
     }
 
     public async revoke(_id: string): Promise<boolean> {
@@ -88,7 +108,7 @@ class MongoStrategy implements UserStoreStrategy {
         return true;
     }
 
-    public async find(_id: string | ObjectID): Promise<UserModel> {
+    public async find(_id: string | ObjectID): Promise<IUserModel> {
         if (!_id) {
             throw null;
         }
@@ -105,7 +125,7 @@ class MongoStrategy implements UserStoreStrategy {
         }
     }
 
-    public async findUser(username: string): Promise<UserModel> {
+    public async findUser(username: string): Promise<IUserModel> {
         let where = {$or: [{username}, {email: username}]};
 
         try {
@@ -118,12 +138,12 @@ class MongoStrategy implements UserStoreStrategy {
 
     }
 
-    public async findUsernamePassword(username: string, password: string): Promise<UserModel> {
+    public async findUsernamePassword(username: string, password: string): Promise<IUserModel> {
         let where = {$or: [{username}, {email: username}]};
 
         try {
             const collection = await this.db.getUsers();
-            const user: UserModel = await collection.find(where).limit(1).next().then(result => result);
+            const user: IUserModel = await collection.find(where).limit(1).next().then(result => result);
 
             if (!user || !await this.comparePassword(password, user.password)) {
                 return null;
@@ -133,11 +153,12 @@ class MongoStrategy implements UserStoreStrategy {
             console.error(err);
             throw new Error('Fetching user failed');
         }
-
     }
 
-    public async deleteUser(_id: string): Promise<UserModel> {
-        return Promise.reject(null);
+    public async deleteUser(_id: string): Promise<boolean> {
+        const collection = await this.db.getUsers();
+        const result = await collection.deleteOne({_id: new ObjectID(_id)});
+        return !!(result && result.deletedCount);
     }
 
     public encryptPassword(password: string): Promise<string> {
@@ -161,14 +182,14 @@ class MongoStrategy implements UserStoreStrategy {
         });
     }
 
-    public isValidUserData(data: UserData): UserDataNotValidError {
+    public isValidUserData(data: IUserData, forUpdate: boolean = false): UserDataNotValidError {
         if (typeof data !== 'object') {
             return new UserDataNotValidError('Invalid User data');
-        } else if (this.options.passwordRegex.test(data.password) === false) {
+        } else if (((forUpdate && data.password) || !forUpdate) && !this.options.passwordRegex.test(data.password)) {
             return new UserDataNotValidError('Invalid password');
-        } else if (this.options.enableUsername && this.options.usernameRegex.test(data.username) === false) {
+        } else if (this.options.enableUsername && ((forUpdate && data.username) || !forUpdate) && this.options.usernameRegex.test(data.username) === false) {
             return new UserDataNotValidError('Invalid username');
-        } else if (!this.options.emailRegex.test(data.email)) {
+        } else if (((forUpdate && data.email) || !forUpdate) && !this.options.emailRegex.test(data.email)) {
             return new UserDataNotValidError('Invalid email');
         }
 

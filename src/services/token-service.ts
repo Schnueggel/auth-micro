@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { Algorithm } from 'jsonwebtoken';
 import * as EnvUtils from '../utils/env-utils';
-import { UserModel } from './user-service';
+import { IUserModel } from './user-service';
 
 export interface ITokenPayload {
     sub: string;
@@ -83,7 +83,7 @@ export default class TokenService {
         });
     }
 
-    async createTokenFromUser(user: UserModel, privateKey: string, uuid: string): Promise<string> {
+    async createTokenFromUser(user: IUserModel, privateKey: string, uuid: string): Promise<string> {
         return await this.createToken({
             sub: user._id,
             revokeId: user.revokeId
@@ -92,7 +92,7 @@ export default class TokenService {
         });
     }
 
-    async createTokensFromUser(user: UserModel, privateKey: string, uuid: string): Promise<ITokens> {
+    async createTokensFromUser(user: IUserModel, privateKey: string, uuid: string): Promise<ITokens> {
         const token = await this.createTokenFromUser(user, privateKey, uuid);
 
         const refreshToken = await this.createRefreshToken({

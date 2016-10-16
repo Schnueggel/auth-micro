@@ -34,8 +34,8 @@ describe('Test token', () => {
         it('should verify token', async() => {
             const userData = await userService.createUser({username: 'username', email: 'email@email', password: '12345678'});
             const signedToken = await tokenService.createToken(Object.assign({}, {sub: userData._id, revokeId: userData.revokeId}), rsa.privateKey, {sid: '1234'});
-            const verified = await tokenService.verifyToken(signedToken, rsa.exportKey('public'));
-            assert.isTrue(verified);
+            const verified = await tokenService.verifyToken(signedToken, rsa.publicKey);
+            assert.isObject(verified);
         });
     }
 );
