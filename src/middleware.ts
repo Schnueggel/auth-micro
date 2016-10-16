@@ -97,6 +97,7 @@ export function userFromTokenCreator(userService: UserService) {
  * Create a middleware that checks the user id in the route params against the id in the token. If the ids do not match or the user of the token is not admin the check will fail
  * with Status code 403
  * TODO load user from param and change user from token to req param tokenUser
+ * TODO config param for allow user self update
  */
 export function checkUserParamCreator(name: string) {
     return (req: IAppRequest & ICheckUserFromParamRequest, res: Response, next: Function) => {

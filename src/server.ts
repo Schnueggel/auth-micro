@@ -1,3 +1,11 @@
+/**
+ * TODO add logging
+ * TODO use passport
+ * TODO add facebook, github, google auth
+ * TODO add integration tests
+ * TODO add Wercker
+ * TODO add Docker
+ */
 import * as express from 'express';
 import config from './config';
 import { Request } from '~express/lib/request';
@@ -13,7 +21,7 @@ import { Application } from '~express/lib/application';
 import {
     tokenExists, tokenVerifyCreator, userFromTokenCreator, checkUserParamCreator, IUserFromTokenRequest, ICheckUserFromParamRequest
 } from './middleware';
-import { isEmpty, pick, get } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import { IUserData } from './services/user-service';
 import { IUserModel } from './services/user-service';
 import { UserNotFoundError } from './errors/index';
