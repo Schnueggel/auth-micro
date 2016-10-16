@@ -5,6 +5,8 @@
  * TODO add integration tests
  * TODO add Wercker
  * TODO add Docker
+ * TODO add tslint
+ * TODO add readme
  */
 import * as express from 'express';
 import config from './config';
