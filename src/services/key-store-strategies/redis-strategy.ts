@@ -23,7 +23,7 @@ export default class RedisStrategy implements KeyStoreStrategy {
 
     setOptions(options: IOptions) {
         this.options = Object.assign({
-            publicKeyTtl: EnvUtils.getNumber('KS_REDIS_STRATEGY_PUBLIC_KEY_TTL', 3600),
+            publicKeyTtl: EnvUtils.getNumber('KS_REDIS_STRATEGY_PUBLIC_KEY_TTL', 60 * 60 * 24 * 30),
             host: EnvUtils.getString('KS_REDIS_STRATEGY_HOST', 'localhost'),
             port: EnvUtils.getNumber('KS_REDIS_STRATEGY_PORT', 6379),
         }, options);

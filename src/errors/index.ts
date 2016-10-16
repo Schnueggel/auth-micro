@@ -35,4 +35,6 @@ Object.setPrototypeOf(Exception.prototype, Error.prototype);
 
 export class UserDataNotValidError extends Exception {}
 export class UserAlreadyExistError extends Exception {}
+export class UserUpdatingError extends Exception {}
+export class UserNotFoundError extends Exception {}
 export class FetchingUserError extends Exception {}

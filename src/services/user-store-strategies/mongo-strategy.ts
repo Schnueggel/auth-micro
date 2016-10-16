@@ -1,10 +1,11 @@
-import { UserStoreStrategy, IUserModel, IUserData } from '../user-service';
+import { IUserStoreStrategy, IUserModel, IUserData } from '../user-service';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
-import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError } from '../../errors';
+import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError, UserUpdatingError, UserNotFoundError } from '../../errors';
 import MongoDb from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 import { FindOneAndReplaceOption } from 'mongodb';
+import { isUndefined } from 'lodash';
 
 export interface IOptions {
     url?: string;
@@ -14,7 +15,7 @@ export interface IOptions {
     passwordRegex?: RegExp;
 }
 
-class MongoStrategy implements UserStoreStrategy {
+class MongoStrategy implements IUserStoreStrategy {
     private options: IOptions;
     public db: MongoDb;
 
@@ -33,7 +34,7 @@ class MongoStrategy implements UserStoreStrategy {
         }, options);
     }
 
-    public async createUser(data): Promise<IUserModel> {
+    public async createUser(data: IUserData): Promise<IUserModel> {
         const validUserError = this.isValidUserData(data);
         if (validUserError instanceof UserDataNotValidError) {
             throw validUserError;
@@ -66,7 +67,7 @@ class MongoStrategy implements UserStoreStrategy {
         return await this.find(result.upsertedId._id);
     }
 
-    public async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
+    public async updateUser(id: string, data: IUserData): Promise<IUserModel> {
         const collection = await this.db.getUsers();
         data = Object.assign({}, data, {updatedAt: new Date().getTime()});
 
@@ -76,14 +77,27 @@ class MongoStrategy implements UserStoreStrategy {
             throw isValid;
         }
 
+        if (data.password) {
+            data.password = await this.encryptPassword(data.password);
+        }
+
+        if (data.deleted)  {
+            data = Object.assign(data, {deletedAt: new Date().getTime()});
+        }
+
         const result = await collection.findOneAndUpdate(
-            {_id: new ObjectID(_id)},
+            {_id: new ObjectID(id)},
             {$set: data},
-            {returnNewDocument: true} as FindOneAndReplaceOption
+            {returnOriginal: false} as FindOneAndReplaceOption
         );
 
         if (!result.ok) {
-            throw new Error('Updating user failed');
+            console.warn(result.lastErrorObject);
+            throw new UserUpdatingError('Updating user failed');
+        }
+
+        if (result.lastErrorObject.n === 0) {
+            throw new UserNotFoundError('Could not find user');
         }
 
         return result.value as IUserModel;
@@ -162,13 +176,11 @@ class MongoStrategy implements UserStoreStrategy {
     }
 
     public encryptPassword(password: string): Promise<string> {
-        return new Promise(
-            (resolve, reject) => {
-                const salt = bcrypt.genSaltSync(10);
-                const hash = bcrypt.hashSync(password, salt);
-                resolve(hash);
-            }
-        );
+        return new Promise((resolve) => {
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(password, salt);
+            resolve(hash);
+        });
     }
 
     public comparePassword(password: string, current: string): Promise<boolean> {

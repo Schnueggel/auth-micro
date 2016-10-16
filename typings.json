@@ -8,6 +8,7 @@
     "body-parser": "registry:npm/body-parser#1.15.2+20160815132839",
     "chai": "registry:npm/chai#3.5.0+20160723033700",
     "express": "registry:npm/express#4.14.0+20160925001530",
+    "lodash": "registry:npm/lodash#4.0.0+20161015015725",
     "mongodb": "registry:npm/mongodb#2.1.0+20160721204323"
   }
 }

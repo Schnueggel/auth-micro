@@ -1,6 +1,12 @@
-
-export interface UserStoreStrategy {
+/**
+ * TODO Error docs
+ */
+export interface IUserStoreStrategy {
     createUser(data: IUserData): Promise<IUserModel>;
+    /**
+     * @throws UserNotFoundError
+     * @throws UserUpdatingError
+     */
     updateUser(_id: string, data: IUserData);
     revoke(_id: string): Promise<boolean>;
     find(_id: string): Promise<IUserModel>;
@@ -26,18 +32,35 @@ export interface IUserData {
     password?: string;
 }
 
-export default class UserService {
-    private strategy: UserStoreStrategy;
+export const UserDataTypeMap = {
+    email: String,
+    username:String,
+    password: String,
+    isAdmin: Boolean
+};
 
-    constructor(strategy: UserStoreStrategy) {
+/**
+ * TODO Error docs
+ */
+export default class UserService implements IUserStoreStrategy {
+    private strategy: IUserStoreStrategy;
+
+    constructor(strategy: IUserStoreStrategy) {
         this.strategy = strategy;
     }
 
     async createUser(data: IUserData): Promise<IUserModel> {
+        data = this.ensureUserDataTypes(data);
         return await this.strategy.createUser(data);
     }
 
+    /**
+     * @throws UserNotFoundError
+     * @throws UserUpdatingError
+     * @inheritDoc
+     */
     async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
+        data = this.ensureUserDataTypes(data);
         return await this.strategy.updateUser(_id, data);
     }
 
@@ -55,9 +78,6 @@ export default class UserService {
 
     /**
      *
-     * @param usernameOrEmail
-     * @param password
-     * @return {IUserModel}
      */
     async findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel> {
         return await this.strategy.findUsernamePassword(usernameOrEmail, password);
@@ -65,5 +85,15 @@ export default class UserService {
 
     async deleteUser(_id: string): Promise<boolean> {
         return await this.strategy.deleteUser(_id);
+    }
+
+    ensureUserDataTypes(data: IUserData): IUserData {
+        Object.keys(data).forEach(key => {
+            if (UserDataTypeMap[key]) {
+                data[key] = UserDataTypeMap[key] (data[key]);
+            }
+        });
+
+        return data;
     }
 }
