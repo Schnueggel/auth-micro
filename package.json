@@ -11,8 +11,6 @@
     "bcrypt": "0.8.7",
     "bluebird": "3.4.6",
     "body-parser": "1.15.2",
-    "commitizen": "2.8.6",
-    "conventional-changelog-lint": "1.0.1",
     "express": "4.14.0",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
@@ -24,6 +22,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "cz-conventional-changelog": "1.2.0",
+    "cz-customizable": "4.0.0",
     "husky": "0.11.9",
     "mocha": "3.1.2",
     "node-rsa": "0.4.2"
@@ -31,6 +30,8 @@
   "scripts": {
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
+    "commitizen": "2.8.6",
+    "conventional-changelog-lint": "1.0.1",
     "test": "mocha ./dist/**/*.spec.js --recursive",
     "start": "pm2 start dist/server.js --name=auth-micro",
     "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
