@@ -4,21 +4,21 @@
   "description": "Micro Service for Authentication using jwt",
   "main": "server.js",
   "dependencies": {
-    "bcrypt": "^0.8.7",
-    "bluebird": "^3.4.6",
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "jsonwebtoken": "^7.1.9",
-    "lodash": "^4.16.4",
-    "mongodb": "^2.2.10",
-    "passport": "^0.3.2",
-    "pm2": "^2.0.18",
-    "redis": "^2.6.2"
+    "bcrypt": "0.8.7",
+    "bluebird": "3.4.6",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "jsonwebtoken": "7.1.9",
+    "lodash": "4.16.4",
+    "mongodb": "2.2.10",
+    "passport": "0.3.2",
+    "pm2": "2.0.18",
+    "redis": "2.6.2"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.1.2",
-    "node-rsa": "^0.4.2"
+    "chai": "3.5.0",
+    "mocha": "3.1.2",
+    "node-rsa": "0.4.2"
   },
   "scripts": {
     "test": "mocha ./dist/**/*.spec.js --recursive",
