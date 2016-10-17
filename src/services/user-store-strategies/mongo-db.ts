@@ -5,7 +5,7 @@ export interface IOptions {
     url?: string;
 }
 
-export default class MongoDb {
+export class MongoDb {
     private db: Db;
     private options: IOptions;
 

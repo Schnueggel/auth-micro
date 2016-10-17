@@ -3,21 +3,19 @@
  * TODO use passport
  * TODO add facebook, github, google auth
  * TODO add integration tests
- * TODO add Wercker
  * TODO add Docker
  * TODO add tslint
- * TODO add readme
  */
 import * as express from 'express';
-import config from './config';
+import { config } from './config';
 import { Request } from '~express/lib/request';
 import { Response } from '~express/lib/response';
-import UserService from './services/user-service';
+import { UserService } from './services/user-service';
 import * as StrategyUtils from './utils/strategy-utils';
-import KeyStoreService from './services/key-store-service';
+import { KeyStoreService } from './services/key-store-service';
 import * as bodyParser from 'body-parser';
 import { ParsedAsJson } from 'body-parser';
-import TokenService from './services/token-service';
+import { TokenService } from './services/token-service';
 import { KeyStoreResult } from './services/key-store-service';
 import { Application } from '~express/lib/application';
 import {
@@ -36,7 +34,7 @@ export interface IAppRequest extends Request, ParsedAsJson {
     app: App;
 }
 
-const app: App = express() as App;
+export const app: App = express() as App;
 
 const userStrategy = StrategyUtils.requireUserStoreStrategy(config.USER_STORE_STRATEGY);
 const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY);
@@ -173,5 +171,3 @@ export async function start() {
 if (!module.parent) {
     start();
 }
-
-export default app;

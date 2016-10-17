@@ -2,7 +2,7 @@ import { IUserStoreStrategy, IUserModel, IUserData } from '../user-service';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError, UserUpdatingError, UserNotFoundError } from '../../errors';
-import MongoDb from './mongo-db';
+import {MongoDb} from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 import { FindOneAndReplaceOption } from 'mongodb';
 
@@ -14,7 +14,7 @@ export interface IOptions {
     passwordRegex?: RegExp;
 }
 
-class MongoStrategy implements IUserStoreStrategy {
+export class MongoStrategy implements IUserStoreStrategy {
     private options: IOptions;
     public db: MongoDb;
 
@@ -207,5 +207,3 @@ class MongoStrategy implements IUserStoreStrategy {
         return null;
     }
 }
-
-export default MongoStrategy;

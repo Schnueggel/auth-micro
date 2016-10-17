@@ -1,7 +1,7 @@
 import { assert }  from 'chai';
-import MongoStrategy from '../services/user-store-strategies/mongo-strategy';
-import UserService from '../services/user-service';
 import { UserAlreadyExistError, UserDataNotValidError } from '../errors';
+import { UserService } from '../services/user-service';
+import { MongoStrategy } from '../services/user-store-strategies/mongo-strategy';
 
 describe('Test user', () => {
     let userService, mongoStrategy;

@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import NodeRsa = require('node-rsa');
 
-export interface KeyStoreStrategy {
+export interface IKeyStoreStrategy {
     get(_id: string): Promise<string>;
     del(_id: string): Promise<boolean>;
     set(key: string, value: string, ttl?: number): Promise<string>;
@@ -13,15 +13,15 @@ export interface KeyStoreResult {
     uid: string;
 }
 
-export default class KeyStoreService {
-    private strategy: KeyStoreStrategy;
-    private keyStoreResult:KeyStoreResult;
+export class KeyStoreService {
+    private strategy: IKeyStoreStrategy;
+    private keyStoreResult: KeyStoreResult;
 
-    constructor(strategy: KeyStoreStrategy) {
+    constructor(strategy: IKeyStoreStrategy) {
         this.strategy = strategy;
     }
 
-    get(key): Promise<string> {
+    public get(key: string): Promise<string> {
         return this.strategy.get(key);
     }
 
@@ -30,18 +30,14 @@ export default class KeyStoreService {
      * @param key (public) key to store
      * @return {Promise<string>}
      */
-    store(key): Promise<string> {
+    public store(key: string): Promise<string> {
         return this.hashKey(key).then(uid => {
             this.strategy.set(uid, key);
             return uid;
         });
     }
 
-    hashKey(key): Promise<string> {
-        return new Promise(resolve => resolve(crypto.createHash('md5').update(key).digest('hex')));
-    }
-
-    del(key): Promise<boolean> {
+    public del(key: string): Promise<boolean> {
         return this.strategy.del(key);
     }
 
@@ -49,7 +45,7 @@ export default class KeyStoreService {
      * Get the current rsa keys or creates them if they do not exist
      * @return {Promise<KeyStoreResult>}
      */
-    async getRsa(): Promise<KeyStoreResult> {
+    public async getRsa(): Promise<KeyStoreResult> {
         if (this.keyStoreResult) {
             return Promise.resolve(this.keyStoreResult);
         }
@@ -60,7 +56,7 @@ export default class KeyStoreService {
      * This should only be called once during app start
      * @return {Promise<KeyStoreResult>}
      */
-    async initRsa(): Promise<KeyStoreResult> {
+    public async initRsa(): Promise<KeyStoreResult> {
         const rsa = new NodeRsa({b: 2048});
         const publicKey = rsa.exportKey('public');
         const uid = await this.store(publicKey);
@@ -71,4 +67,9 @@ export default class KeyStoreService {
         };
         return Promise.resolve(this.keyStoreResult);
     }
+
+    private hashKey(key: string): Promise<string> {
+        return new Promise(resolve => resolve(crypto.createHash('md5').update(key).digest('hex')));
+    }
+
 }

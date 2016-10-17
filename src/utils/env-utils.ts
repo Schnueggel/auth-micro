@@ -23,7 +23,7 @@ export function getString(key: string, defaultValue?: string): string {
 
 export function getBoolean(key: string, defaultValue?: boolean): boolean {
     if (process.env[key]) {
-        if(process.env[key] === '0' || process.env[key] === 'false') {
+        if (process.env[key] === '0' || process.env[key] === 'false') {
             return false;
         }
 

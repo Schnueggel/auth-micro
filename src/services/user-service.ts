@@ -7,7 +7,7 @@ export interface IUserStoreStrategy {
      * @throws UserNotFoundError
      * @throws UserUpdatingError
      */
-    updateUser(_id: string, data: IUserData);
+    updateUser(_id: string, data: IUserData): Promise<IUserModel>;
     revoke(_id: string): Promise<boolean>;
     find(_id: string): Promise<IUserModel>;
     findUser(usernameOrEmail: string): Promise<IUserModel>;
@@ -34,7 +34,7 @@ export interface IUserData {
 
 export const UserDataTypeMap = {
     email: String,
-    username:String,
+    username: String,
     password: String,
     isAdmin: Boolean
 };
@@ -42,14 +42,14 @@ export const UserDataTypeMap = {
 /**
  * TODO Error docs
  */
-export default class UserService implements IUserStoreStrategy {
+export class UserService implements IUserStoreStrategy {
     private strategy: IUserStoreStrategy;
 
     constructor(strategy: IUserStoreStrategy) {
         this.strategy = strategy;
     }
 
-    async createUser(data: IUserData): Promise<IUserModel> {
+    public async createUser(data: IUserData): Promise<IUserModel> {
         data = this.ensureUserDataTypes(data);
         return await this.strategy.createUser(data);
     }
@@ -57,40 +57,39 @@ export default class UserService implements IUserStoreStrategy {
     /**
      * @throws UserNotFoundError
      * @throws UserUpdatingError
-     * @inheritDoc
      */
-    async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
+    public async updateUser(_id: string, data: IUserData): Promise<IUserModel> {
         data = this.ensureUserDataTypes(data);
         return await this.strategy.updateUser(_id, data);
     }
 
-    async revoke(_id: string): Promise<boolean> {
+    public async revoke(_id: string): Promise<boolean> {
         return await this.strategy.revoke(_id);
     }
 
-    async find(_id: string): Promise<IUserModel> {
+    public async find(_id: string): Promise<IUserModel> {
         return await this.strategy.find(_id);
     }
 
-    async findUser(usernameOrEmail: string): Promise<IUserModel> {
+    public async findUser(usernameOrEmail: string): Promise<IUserModel> {
         return await this.strategy.findUser(usernameOrEmail);
     }
 
     /**
      *
      */
-    async findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel> {
+    public async findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel> {
         return await this.strategy.findUsernamePassword(usernameOrEmail, password);
     }
 
-    async deleteUser(_id: string): Promise<boolean> {
+    public async deleteUser(_id: string): Promise<boolean> {
         return await this.strategy.deleteUser(_id);
     }
 
-    ensureUserDataTypes(data: IUserData): IUserData {
+    private ensureUserDataTypes(data: IUserData): IUserData {
         Object.keys(data).forEach(key => {
             if (UserDataTypeMap[key]) {
-                data[key] = UserDataTypeMap[key] (data[key]);
+                data[key] = UserDataTypeMap[key](data[key]);
             }
         });
 

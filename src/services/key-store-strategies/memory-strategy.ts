@@ -1,4 +1,4 @@
-import { KeyStoreStrategy } from '../key-store-service';
+import { IKeyStoreStrategy } from '../key-store-service';
 import * as EnvUtils from '../../utils/env-utils';
 
 export interface IOptions {
@@ -8,7 +8,7 @@ export interface IOptions {
 /**
  * Strategy for saving keys in memory.
  */
-export default class MemoryStrategy implements KeyStoreStrategy {
+export class MemoryStrategy implements IKeyStoreStrategy {
     private store: {[index: string]: string} = {};
     private timeouts: {[index: string]: NodeJS.Timer} = {};
     private options: IOptions;

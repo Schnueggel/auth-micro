@@ -1,8 +1,8 @@
+import { IKeyStoreStrategy } from '../services/key-store-service';
 import { IUserStoreStrategy } from '../services/user-service';
-import { KeyStoreStrategy } from '../services/key-store-service';
 
-export function requireKeyStoreStrategy(store: string): KeyStoreStrategy {
-    let strategy: any;
+export function requireKeyStoreStrategy(store: string): IKeyStoreStrategy {
+    let strategy: typeof IKeyStoreStrategy;
     try {
         strategy = require('../services/key-store-strategies/' + store).default;
     } catch (err) {
@@ -13,7 +13,7 @@ export function requireKeyStoreStrategy(store: string): KeyStoreStrategy {
 }
 
 export function requireUserStoreStrategy(store: string): IUserStoreStrategy {
-    let strategy: any;
+    let strategy: typeof IUserStoreStrategy;
     try {
         strategy = require('../services/user-store-strategies/' + store).default;
     } catch (err) {

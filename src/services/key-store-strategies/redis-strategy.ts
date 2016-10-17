@@ -1,4 +1,4 @@
-import { KeyStoreStrategy } from '../key-store-service';
+import { IKeyStoreStrategy } from '../key-store-service';
 import * as redis from 'redis';
 import { RedisClient } from 'redis';
 import * as EnvUtils from '../../utils/env-utils';
@@ -12,7 +12,7 @@ export interface IOptions {
     port: number;
 }
 
-export default class RedisStrategy implements KeyStoreStrategy {
+export class RedisStrategy implements IKeyStoreStrategy {
     private client: RedisClient;
     private options: IOptions;
 

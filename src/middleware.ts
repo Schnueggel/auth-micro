@@ -1,10 +1,10 @@
 import { IAppRequest } from './server';
 import { Response } from '~express/lib/response';
-import TokenService from './services/token-service';
-import KeyStoreService from './services/key-store-service';
+import { TokenService } from './services/token-service';
+import { KeyStoreService } from './services/key-store-service';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { ITokenData } from './services/token-service';
-import UserService from './services/user-service';
+import { UserService } from './services/user-service';
 import { IUserModel } from './services/user-service';
 
 export interface ITokenVerifyRequest {

@@ -1,58 +1,60 @@
 {
-  "name": "auth-micro",
-  "version": "1.0.0",
-  "description": "Micro Service for Authentication using jwt",
-  "main": "server.js",
-  "repository": {
-    "url": "https://github.com/Schnueggel/auth-micro",
-    "type": "git"
-  },
-  "dependencies": {
-    "bcrypt": "0.8.7",
-    "bluebird": "3.4.6",
-    "body-parser": "1.15.2",
-    "express": "4.14.0",
-    "jsonwebtoken": "7.1.9",
-    "lodash": "4.16.4",
-    "mongodb": "2.2.10",
-    "passport": "0.3.2",
-    "pm2": "2.0.18",
-    "redis": "2.6.2"
-  },
-  "devDependencies": {
-    "chai": "3.5.0",
-    "cz-customizable": "4.0.0",
-    "husky": "0.11.9",
-    "mocha": "3.1.2",
-    "node-rsa": "0.4.2",
-    "typescript": "2.1.0-dev.20161017"
-  },
-  "scripts": {
-    "commit": "git-cz",
-    "commitmsg": "conventional-changelog-lint -e",
-    "commitizen": "2.8.6",
-    "conventional-changelog-lint": "1.0.1",
-    "test": "mocha ./dist/**/*.spec.js --recursive",
-    "start": "pm2 start dist/server.js --name=auth-micro",
-    "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
-    "log": "pm2 log auth-micro",
-    "stop": "pm2 stop auth-micro",
-    "build": "tsc --rootDir src --outDir dist",
-    "build:watch": "tsc --rootDir src --outDir dist -w"
-  },
-  "keywords": [
-    "auth",
-    "jwt",
-    "service"
-  ],
-  "author": "Christian Steinmann<christian.steinmann77@gmail.com>",
-  "license": "MIT",
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
+    "name": "auth-micro",
+    "version": "1.0.0",
+    "description": "Micro Service for Authentication using jwt",
+    "main": "server.js",
+    "repository": {
+        "url": "https://github.com/Schnueggel/auth-micro",
+        "type": "git"
     },
-    "cz-customizable": {
-      "config": ".cz-config.js"
+    "dependencies": {
+        "bcrypt": "0.8.7",
+        "bluebird": "3.4.6",
+        "body-parser": "1.15.2",
+        "express": "4.14.0",
+        "jsonwebtoken": "7.1.9",
+        "lodash": "4.16.4",
+        "mongodb": "2.2.10",
+        "passport": "0.3.2",
+        "pm2": "2.0.18",
+        "redis": "2.6.2"
+    },
+    "devDependencies": {
+        "chai": "3.5.0",
+        "cz-customizable": "4.0.0",
+        "husky": "0.11.9",
+        "mocha": "3.1.2",
+        "node-rsa": "0.4.2",
+        "tslint": "3.15.1",
+        "typescript": "2.1.0-dev.20161017"
+    },
+    "scripts": {
+        "commit": "git-cz",
+        "commitmsg": "conventional-changelog-lint -e",
+        "commitizen": "2.8.6",
+        "conventional-changelog-lint": "1.0.1",
+        "test": "mocha ./dist/**/*.spec.js --recursive",
+        "start": "pm2 start dist/server.js --name=auth-micro",
+        "lint": "tslint src/**/*.ts",
+        "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
+        "log": "pm2 log auth-micro",
+        "stop": "pm2 stop auth-micro",
+        "build": "tsc --rootDir src --outDir dist",
+        "build:watch": "tsc --rootDir src --outDir dist -w"
+    },
+    "keywords": [
+        "auth",
+        "jwt",
+        "service"
+    ],
+    "author": "Christian Steinmann<christian.steinmann77@gmail.com>",
+    "license": "MIT",
+    "config": {
+        "commitizen": {
+            "path": "node_modules/cz-customizable"
+        },
+        "cz-customizable": {
+            "config": ".cz-config.js"
+        }
     }
-  }
 }
