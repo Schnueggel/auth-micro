@@ -9,7 +9,6 @@ module.exports = {
         {value: 'refactor', name: 'refactor: A code change that neither fixes a bug nor adds a feature'},
         {value: 'test',     name: 'test:     Adding missing tests'},
         {value: 'chore',    name: 'chore:    Changes to the build process or auxiliary tools\n            and libraries such as documentation generation'},
-        {value: 'build',    name: 'build:    Changes to the build system'},
         {value: 'revert',   name: 'revert:   Revert to a commit'}
     ],
 
