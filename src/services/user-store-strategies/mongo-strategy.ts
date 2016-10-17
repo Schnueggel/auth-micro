@@ -5,7 +5,6 @@ import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError, UserUp
 import MongoDb from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 import { FindOneAndReplaceOption } from 'mongodb';
-import { isUndefined } from 'lodash';
 
 export interface IOptions {
     url?: string;

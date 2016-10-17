@@ -10,7 +10,7 @@ export interface IOptions {
  */
 export default class MemoryStrategy implements KeyStoreStrategy {
     private store: {[index: string]: string} = {};
-    private timeouts: {[index: string]: number} = {};
+    private timeouts: {[index: string]: NodeJS.Timer} = {};
     private options: IOptions;
 
     constructor(options?: IOptions) {
@@ -32,23 +32,19 @@ export default class MemoryStrategy implements KeyStoreStrategy {
     }
 
     set(key: string, value: string, ttl: number): Promise<string> {
-        return new Promise(
-            (resolve) => {
-                ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
-                if (this.store[key]) {
-                    clearTimeout(this.timeouts[key]);
-                }
-                this.store[key] = value;
-                this.timeouts[key] = setTimeout(
-                    () => {
-                        delete this.store[key];
-                        delete this.timeouts[key];
-                    }
-                );
-
-                resolve(key);
+        return new Promise(resolve => {
+            ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
+            if (this.store[key]) {
+                clearTimeout(this.timeouts[key]);
             }
-        );
+            this.store[key] = value;
+            this.timeouts[key] = setTimeout(() => {
+                delete this.store[key];
+                delete this.timeouts[key];
+            }, ttl);
+
+            resolve(key);
+        });
     }
 
     del(key: string): Promise<boolean> {

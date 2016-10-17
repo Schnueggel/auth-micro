@@ -26,7 +26,7 @@ import {
 import { isEmpty, pick } from 'lodash';
 import { IUserData } from './services/user-service';
 import { IUserModel } from './services/user-service';
-import { UserNotFoundError } from './error';
+import { UserNotFoundError } from './errors';
 
 export interface App extends Application {
     keyStoreResult: KeyStoreResult
