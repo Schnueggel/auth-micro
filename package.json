@@ -31,6 +31,7 @@
     "scripts": {
         "commit": "git-cz",
         "commitmsg": "conventional-changelog-lint -e",
+        "precommit": "npm run lint",
         "commitizen": "2.8.6",
         "conventional-changelog-lint": "1.0.1",
         "test": "mocha ./dist/**/*.spec.js --recursive",

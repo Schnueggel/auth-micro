@@ -7,7 +7,7 @@ import { MongoStrategy } from '../services/user-store-strategies/mongo-strategy'
 
 describe('Test token', () => {
         let tokenService, userService, keyStoreService, rsa;
-        before(async function (): void {
+        before(async function (): Promise<void> {
             /* tslint:disable */
             this.timeout(10000);
             /* tslint:enable */
