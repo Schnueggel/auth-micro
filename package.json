@@ -3,10 +3,16 @@
   "version": "1.0.0",
   "description": "Micro Service for Authentication using jwt",
   "main": "server.js",
+  "repository": {
+    "url": "https://github.com/Schnueggel/auth-micro",
+    "type": "git"
+  },
   "dependencies": {
     "bcrypt": "0.8.7",
     "bluebird": "3.4.6",
     "body-parser": "1.15.2",
+    "commitizen": "2.8.6",
+    "conventional-changelog-lint": "1.0.1",
     "express": "4.14.0",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
@@ -17,10 +23,14 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "cz-conventional-changelog": "1.2.0",
+    "husky": "0.11.9",
     "mocha": "3.1.2",
     "node-rsa": "0.4.2"
   },
   "scripts": {
+    "commit": "git-cz",
+    "commitmsg": "conventional-changelog-lint -e",
     "test": "mocha ./dist/**/*.spec.js --recursive",
     "start": "pm2 start dist/server.js --name=auth-micro",
     "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
@@ -34,6 +44,14 @@
     "jwt",
     "service"
   ],
-  "author": "Christian Steinmann",
-  "license": "MIT"
+  "author": "Christian Steinmann<christian.steinmann77@gmail.com>",
+  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.js"
+    }
+  }
 }
