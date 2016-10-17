@@ -9,9 +9,7 @@ describe('Test token', () => {
         let tokenService, userService, keyStoreService, rsa;
         before(async function() {
             this.timeout(10000);
-            const mongoStrategy = new MongoStrategy({
-                url: 'localhost:27017/auth-micro-test'
-            });
+            const mongoStrategy = new MongoStrategy();
             userService = new UserService(mongoStrategy);
             tokenService = new TokenService();
             const keyStoreStrategy = new MemoryStrategy();

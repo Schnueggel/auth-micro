@@ -6,9 +6,7 @@ import { UserAlreadyExistError, UserDataNotValidError } from '../errors';
 describe('Test user', () => {
     let userService, mongoStrategy;
     before(async() => {
-        mongoStrategy = new MongoStrategy({
-            url: 'localhost:27017/auth-micro-test'
-        });
+        mongoStrategy = new MongoStrategy();
         userService = new UserService(mongoStrategy);
         await mongoStrategy.db.clearCollectionUser();
     });
