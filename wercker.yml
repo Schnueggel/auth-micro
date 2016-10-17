@@ -31,7 +31,7 @@ build:
         code: |
           export KS_REDIS_STRATEGY_HOST=$REDIS_PORT_6379_TCP_ADDR
           export US_MONGO_STRATEGY_URL="$MONGO_PORT_27017_TCP_ADDR:27017/auth-micro"
-    - npm-test
+          npm run test
     # A custom script step, name value is used in the UI
     # and the code value contains the command that get executed
     - script:
