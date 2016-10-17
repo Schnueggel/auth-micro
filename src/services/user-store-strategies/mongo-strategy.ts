@@ -28,7 +28,7 @@ class MongoStrategy implements IUserStoreStrategy {
             emailRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_EMAIL_REGEX', /[^ @]*@[^ @]*/),
             usernameRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_USERNAME_REGEX', /^[a-zA-Z][0-9a-zA-Z]{1,20}$/),
             passwordRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_PASSWORD_REGEX', /^.{8,250}$/),
-            url: EnvUtils.getString('US_MONGO_STRATEGY__URL', 'localhost:27017/auth-micro'),
+            url: EnvUtils.getString('US_MONGO_STRATEGY_URL', 'localhost:27017/auth-micro'),
             enableUsername: EnvUtils.getBoolean('US_MONGO_STRATEGY_ENABLE_USERNAME', true),
         }, options);
     }
