@@ -24,7 +24,7 @@ import {
 import { isEmpty, pick } from 'lodash';
 import { IUserData } from './services/user-service';
 import { IUserModel } from './services/user-service';
-import { UserNotFoundError } from './errors';
+import { UserNotFoundError, UserDataNotValidError } from './errors';
 import { Server } from 'http';
 
 export interface App extends Application {
@@ -71,9 +71,14 @@ app.post('/auth', bodyParserJson, async(req: IAppRequest, res: Response) => {
 
         res.json(tokens);
     } catch (err) {
+        if (err instanceof UserDataNotValidError) {
+            res.status(422);
+            res.json({message: err.message});
+            return;
+        }
         console.error(err);
         res.status(500);
-        res.send(err.message);
+        res.json({message: err.message});
     }
 });
 
