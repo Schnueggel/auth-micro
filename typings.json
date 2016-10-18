@@ -1,7 +1,8 @@
 {
   "globalDependencies": {
     "mocha": "registry:env/mocha#2.2.5+20160926180742",
-    "node": "registry:env/node#6.0.0+20161011193755"
+    "node": "registry:env/node#6.0.0+20161011193755",
+    "request-promise-native": "registry:dt/request-promise-native#1.0.3+20161006212032"
   },
   "dependencies": {
     "bcrypt": "registry:npm/bcrypt#0.8.0+20161010165625",
@@ -9,6 +10,7 @@
     "chai": "registry:npm/chai#3.5.0+20160723033700",
     "express": "registry:npm/express#4.14.0+20160925001530",
     "lodash": "registry:npm/lodash#4.0.0+20161015015725",
-    "mongodb": "registry:npm/mongodb#2.1.0+20160721204323"
+    "mongodb": "registry:npm/mongodb#2.1.0+20160721204323",
+    "request": "registry:npm/request#2.69.0+20160428223725"
   }
 }

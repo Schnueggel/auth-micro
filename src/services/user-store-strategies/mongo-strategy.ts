@@ -2,7 +2,7 @@ import { IUserStoreStrategy, IUserModel, IUserData } from '../user-service';
 import * as bcrypt from 'bcrypt';
 import { ObjectID } from 'mongodb';
 import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError, UserUpdatingError, UserNotFoundError } from '../../errors';
-import {MongoDb} from './mongo-db';
+import { MongoDb } from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 import { FindOneAndReplaceOption } from 'mongodb';
 
@@ -80,7 +80,7 @@ export class MongoStrategy implements IUserStoreStrategy {
             data.password = await this.encryptPassword(data.password);
         }
 
-        if (data.deleted)  {
+        if (data.deleted) {
             data = Object.assign(data, {deletedAt: new Date().getTime()});
         }
 

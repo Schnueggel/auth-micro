@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/4b988a263b2433b26c807c2bfaf299f05e8f4d9f/request-promise-native/request-promise-native.d.ts",
+    "raw": "registry:dt/request-promise-native#1.0.3+20161006212032",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/4b988a263b2433b26c807c2bfaf299f05e8f4d9f/request-promise-native/request-promise-native.d.ts"
+  }
+}

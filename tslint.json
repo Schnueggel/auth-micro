@@ -67,8 +67,7 @@
         ],
         "no-internal-module": true,
         "no-invalid-this": [
-            true,
-            "check-function-in-method"
+            false
         ],
         "no-mergeable-namespace": true,
         "no-namespace": true,

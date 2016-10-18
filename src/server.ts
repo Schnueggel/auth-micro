@@ -25,6 +25,7 @@ import { isEmpty, pick } from 'lodash';
 import { IUserData } from './services/user-service';
 import { IUserModel } from './services/user-service';
 import { UserNotFoundError } from './errors';
+import { Server } from 'http';
 
 export interface App extends Application {
     keyStoreResult: KeyStoreResult
@@ -35,7 +36,6 @@ export interface IAppRequest extends Request, ParsedAsJson {
 }
 
 export const app: App = express() as App;
-
 const userStrategy = StrategyUtils.requireUserStoreStrategy(config.USER_STORE_STRATEGY);
 const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY);
 const userService = new UserService(userStrategy);
@@ -161,10 +161,13 @@ app.put('/user/:id', bodyParserJson, tokenExists, tokenVerify, userFromToken, ch
     }
 });
 
-export async function start() {
+export async function start(): Promise<Server> {
     app.keyStoreResult = await keyStoreService.initRsa();
-    app.listen(config.PORT, function () {
-        console.log('Server started at port ' + config.PORT);
+    return new Promise<Server>(resolve => {
+        const server = app.listen(config.PORT, function () {
+            console.log('Server started at port ' + config.PORT);
+            resolve(server);
+        });
     });
 }
 

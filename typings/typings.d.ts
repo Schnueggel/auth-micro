@@ -2,6 +2,14 @@ interface Date {
     now(): number;
 }
 
+declare module 'http' {
+    import { IncomingMessage } from 'http';
+
+    export interface Response<TBody> extends IncomingMessage {
+        body?: TBody;
+    }
+}
+
 declare module 'redis' {
     export function createClient(port: number, host?: string, options?: ClientOptions): RedisClient;
     export function createClient(unix_socket: string, options?: ClientOptions): RedisClient;
