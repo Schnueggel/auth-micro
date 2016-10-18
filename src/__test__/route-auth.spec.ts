@@ -10,7 +10,7 @@ describe('route auth', () => {
     let app: Server;
     let options: RequestPromiseOptions & UrlOptions;
 
-    before(async function (): void {
+    before(async function (): Promise<void> {
         this.timeout(20000);
         app = await start();
     });
