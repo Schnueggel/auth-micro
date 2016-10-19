@@ -41,14 +41,15 @@ export async function stop(): Promise<void> {
     if (!server) {
         return Promise.resolve();
     }
-    return new Promise((resolve: Function) => {
+    return new Promise<void>((resolve: Function) => {
         server.close(() => {
             resolve();
         });
     });
 }
 
-export async function start(config: IConfig): Promise<Server> {
+export async function start(config?: IConfig): Promise<Server> {
+    config = config || env;
     const app: App = express() as App;
 
     await stop();
