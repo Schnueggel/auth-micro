@@ -24,6 +24,10 @@ build:
         code: |
           npm install -g yarn
     - script:
+        name: install modules
+        code: |
+          yarn
+    - script:
         name: build
         code: |
           yarn run build
