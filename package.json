@@ -20,8 +20,7 @@
     "passport": "0.3.2",
     "passport-facebook": "2.1.1",
     "pm2": "2.0.18",
-    "redis": "2.6.2",
-    "rimraf": "^2.5.4"
+    "redis": "2.6.2"
   },
   "devDependencies": {
     "ava": "0.16.0",
@@ -32,12 +31,12 @@
     "request-promise-native": "1.0.3",
     "rimraf": "2.5.4",
     "tslint": "3.15.1",
-    "typescript": "2.1.0-dev.20161017"
+    "typescript": "2.1.0-dev.20161017",
   },
   "scripts": {
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
-    "precommit": "npm run lint",
+    "precommit": "yarn run lint",
     "commitizen": "2.8.6",
     "conventional-changelog-lint": "1.0.1",
     "test": "ava ./dist/**/*.spec.js",
@@ -47,8 +46,8 @@
     "log": "pm2 log auth-micro --lines 50",
     "stop": "pm2 stop auth-micro",
     "cleanup": "rimraf ./dist",
-    "build": "npm run cleanup && tsc --rootDir src --outDir dist",
-    "build:watch": "npm run cleanup && tsc --rootDir src --outDir dist -w"
+    "build": "yarn run cleanup && tsc --rootDir src --outDir dist",
+    "build:watch": "yarn run cleanup && tsc --rootDir src --outDir dist -w"
   },
   "keywords": [
     "auth",
