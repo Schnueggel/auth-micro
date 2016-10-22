@@ -10,6 +10,10 @@ declare module 'http' {
     }
 }
 
+declare namespace test.after {
+    export function always(name: string, implementation: any): void;
+}
+
 declare module 'redis' {
     export function createClient(port: number, host?: string, options?: ClientOptions): RedisClient;
     export function createClient(unix_socket: string, options?: ClientOptions): RedisClient;

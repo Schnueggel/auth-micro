@@ -138,6 +138,19 @@ export class MongoStrategy implements IUserStoreStrategy {
         }
     }
 
+    public async findFacebookUser(_id: string | ObjectID): Promise<IUserModel> {
+        if (!_id) {
+            throw null;
+        }
+
+        try {
+            const collection = await this.db.getUsers();
+            return await collection.find({facebookId: _id}).limit(1).next().then(result => result);
+        } catch (err) {
+            throw new FetchingUserError('Fetching user failed');
+        }
+    }
+
     public async findUser(username: string): Promise<IUserModel> {
         let where = {$or: [{username}, {email: username}]};
 

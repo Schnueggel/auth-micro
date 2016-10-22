@@ -10,6 +10,7 @@ export interface IUserStoreStrategy {
     updateUser(_id: string, data: IUserData): Promise<IUserModel>;
     revoke(_id: string): Promise<boolean>;
     find(_id: string): Promise<IUserModel>;
+    findFacebookUser(_id: string): Promise<IUserModel>;
     findUser(usernameOrEmail: string): Promise<IUserModel>;
     findUsernamePassword(usernameOrEmail: string, password: string): Promise<IUserModel>;
     deleteUser(_id: string): Promise<boolean>;
@@ -28,6 +29,7 @@ export interface IUserData {
     deleted?: boolean;
     disabled?: boolean;
     isAdmin?: boolean;
+    facebookId?: string;
     username?: string;
     password?: string;
 }
@@ -69,6 +71,10 @@ export class UserService implements IUserStoreStrategy {
 
     public async find(_id: string): Promise<IUserModel> {
         return await this.strategy.find(_id);
+    }
+
+    public async findFacebookUser(_id: string): Promise<IUserModel> {
+        return await this.strategy.findFacebookUser(_id);
     }
 
     public async findUser(usernameOrEmail: string): Promise<IUserModel> {

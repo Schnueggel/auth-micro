@@ -35,3 +35,10 @@ export function getBoolean(key: string, defaultValue?: boolean): boolean {
     }
     return defaultValue;
 }
+
+export function getArray(key: string, defaultValue?: Array<string>): Array<string> {
+    if (typeof key === 'string') {
+        return key.split(',');
+    }
+    return defaultValue;
+}

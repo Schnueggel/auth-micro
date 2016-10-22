@@ -8,6 +8,7 @@
     "type": "git"
   },
   "dependencies": {
+    "ava": "0.16.0",
     "bcrypt": "0.8.7",
     "bluebird": "3.4.6",
     "body-parser": "1.15.2",
@@ -16,17 +17,18 @@
     "lodash": "4.16.4",
     "mongodb": "2.2.11",
     "passport": "0.3.2",
+    "passport-facebook": "2.1.1",
     "pm2": "2.0.18",
     "redis": "2.6.2"
   },
   "devDependencies": {
-    "chai": "3.5.0",
+    "ava": "0.16.0",
     "cz-customizable": "4.0.0",
     "husky": "0.11.9",
-    "mocha": "3.1.2",
     "node-rsa": "0.4.2",
     "request": "2.75.0",
     "request-promise-native": "1.0.3",
+    "rimraf": "2.5.4",
     "tslint": "3.15.1",
     "typescript": "2.1.0-dev.20161017"
   },
@@ -36,14 +38,15 @@
     "precommit": "npm run lint",
     "commitizen": "2.8.6",
     "conventional-changelog-lint": "1.0.1",
-    "test": "mocha ./dist/**/*.spec.js --recursive",
+    "test": "ava ./dist/**/*.spec.js",
     "start": "pm2 start dist/server.js --name=auth-micro",
     "lint": "tslint src/**/*.ts",
     "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
     "log": "pm2 log auth-micro --lines 50",
     "stop": "pm2 stop auth-micro",
-    "build": "tsc --rootDir src --outDir dist",
-    "build:watch": "tsc --rootDir src --outDir dist -w"
+      "cleanup": "rimraf ./dist",
+    "build": "npm run cleanup && tsc --rootDir src --outDir dist",
+    "build:watch": "npm run cleanup && tsc --rootDir src --outDir dist -w"
   },
   "keywords": [
     "auth",
