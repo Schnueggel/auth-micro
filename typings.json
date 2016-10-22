@@ -2,6 +2,7 @@
   "globalDependencies": {
     "mocha": "registry:env/mocha#2.2.5+20160926180742",
     "node": "registry:env/node#6.0.0+20161011193755",
+    "node-fetch": "registry:dt/node-fetch#0.0.0+20160711094047",
     "passport": "registry:dt/passport#0.2.0+20161013124703",
     "passport-facebook": "registry:dt/passport-facebook#1.0.3+20160316155526",
     "passport-local": "registry:dt/passport-local#0.0.0+20160316155526",

@@ -44,7 +44,7 @@
     "start:watch": "pm2 start dist/server.js --name=auth-micro --watch",
     "log": "pm2 log auth-micro --lines 50",
     "stop": "pm2 stop auth-micro",
-      "cleanup": "rimraf ./dist",
+    "cleanup": "rimraf ./dist",
     "build": "npm run cleanup && tsc --rootDir src --outDir dist",
     "build:watch": "npm run cleanup && tsc --rootDir src --outDir dist -w"
   },

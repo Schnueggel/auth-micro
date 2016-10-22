@@ -43,9 +43,12 @@ declare module 'redis' {
     }
 
     export class RedisClient {
-        expire (key: string, seconds: number): void;
-        getAsync (key: string): Promise<string>;
+        expire(key: string, seconds: number): void;
+
+        getAsync(key: string): Promise<string>;
+
         setAsync(key: string, value: any): Promise<'OK'>;
+
         delAsync(key: string): Promise<number>;
     }
 }

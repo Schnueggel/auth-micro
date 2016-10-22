@@ -1,6 +1,6 @@
-import * as request from 'request-promise-native';
+import * as requestPromise from 'request-promise-native';
 import test  from 'ava';
-import { start } from '../server';
+import { start, IAuthResponse } from '../server';
 import { UrlOptions } from 'request';
 import { IncomingMessage } from 'http';
 import { Server } from 'http';
@@ -55,7 +55,7 @@ test.beforeEach((t: ContextualTestContext) => {
 
 test('should reject invalid login attempt with 400', async t => {
     try {
-        await request(t.context.options as UrlOptions) as IncomingMessage;
+        await requestPromise(t.context.options as UrlOptions) as IncomingMessage;
     } catch (err) {
         t.is(err.response.statusCode, 400);
         t.is(err.response.body.message, 'Invalid Data');
@@ -67,7 +67,7 @@ test('should reject invalid login attempt with 400 if password is missing', asyn
         t.context.options.body = {
             username: 'username'
         };
-        await request(t.context.options as UrlOptions) as IncomingMessage;
+        await requestPromise(t.context.options as UrlOptions) as IncomingMessage;
         t.false(true);
     } catch (err) {
         t.is(err.response.statusCode, 400);
@@ -80,7 +80,7 @@ test('should reject invalid login attempt with 400 if username is missing', asyn
         t.context.options.body = {
             password: '123456'
         };
-        await request(t.context.options as UrlOptions) as IncomingMessage;
+        await requestPromise(t.context.options as UrlOptions) as IncomingMessage;
         t.false(true);
     } catch (err) {
         t.is(err.response.statusCode, 400);
@@ -94,8 +94,29 @@ test('should auth user by email', async t => {
             username: 'test@email.de',
             password: '12345678'
         };
-        const response = await request(t.context.options as UrlOptions) as Response<Object>;
+        /* tslint:disable */
+        const response: Response<IAuthResponse> = (await requestPromise(t.context.options as UrlOptions) as any) as Response<IAuthResponse>;
+        /* tslint:enable */
         t.is(response.statusCode, 200);
+        t.regex(response.body.token, /.+\..+\..+/);
+        t.regex(response.body.refreshToken, /.+\..+\..+/);
+    } catch (err) {
+        t.false(err);
+    }
+});
+
+test('should auth user by username', async t => {
+    try {
+        t.context.options.body = {
+            username: 'test',
+            password: '12345678'
+        };
+        /* tslint:disable */
+        const response: Response<IAuthResponse> = (await requestPromise(t.context.options as UrlOptions) as any) as Response<IAuthResponse>;
+        /* tslint:enable */
+        t.is(response.statusCode, 200);
+        t.regex(response.body.token, /.+\..+\..+/);
+        t.regex(response.body.refreshToken, /.+\..+\..+/);
     } catch (err) {
         t.false(err);
     }

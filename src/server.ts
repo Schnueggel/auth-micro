@@ -49,6 +49,11 @@ export interface IStrategyOptions {
 
 let server: Server;
 
+export interface IAuthResponse {
+    token: string;
+    refreshToken: string;
+}
+
 export async function stop(): Promise<void> {
     if (!server) {
         return Promise.resolve();
