@@ -2,14 +2,16 @@ import * as bodyParser from 'body-parser';
 import { TokenService } from '../services/token-service';
 import { UserService } from '../services/user-service';
 import { KeyStoreService } from '../services/key-store-service';
-import { IAppRequest, IApp, IFacebookProfile, IRefreshRequest } from '../server';
+import { IAppRequest, IApp, IFacebookProfile } from '../server';
 import { UserDataNotValidError } from '../errors';
 import { Response } from '~express/lib/response';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { tokenExists, enableRouteCreator, tokenVerifyCreator, userFromTokenCreator } from '../middleware';
+import { tokenExists, enableRouteCreator, tokenVerifyCreator, userFromTokenCreator, IUserFromTokenRequest } from '../middleware';
 const bodyParserJson = bodyParser.json();
 
-export function authRouteFactory(app: IApp, tokenService: TokenService, userService: UserService, keyStoreService: KeyStoreService): void {
+export type IRefreshRequest = IAppRequest & IUserFromTokenRequest;
+
+export function authRoutesFactory(app: IApp, tokenService: TokenService, userService: UserService, keyStoreService: KeyStoreService): void {
     const passwordjs = require('passport');
     const passport = new passwordjs.Passport();
     const tokenVerify = tokenVerifyCreator(tokenService, keyStoreService);
