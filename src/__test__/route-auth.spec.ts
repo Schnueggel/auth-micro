@@ -14,9 +14,8 @@ let userService: UserService;
 let user: IUserModel;
 
 test.before(async() => {
-    const mongoStrategy = new MongoStrategy({
-        url: 'localhost:27017/auth-micro-test'
-    });
+    process.env['US_MONGO_STRATEGY_URL'] = process.env['US_MONGO_STRATEGY_URL'] || 'localhost:27017/auth-micro-test';
+    const mongoStrategy = new MongoStrategy();
 
     await mongoStrategy.db.clearCollectionUser();
     userService = new UserService(mongoStrategy);
@@ -27,11 +26,7 @@ test.before(async() => {
         password: '12345678'
     });
 
-    app = await start({
-        userStrategyOptions: {
-            url: 'localhost:27017/auth-micro-test'
-        }
-    });
+    app = await start();
 });
 /* tslint:disable */
 (test.after as any).always(async() => {

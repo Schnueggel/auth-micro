@@ -21,7 +21,7 @@ export class MongoStrategy implements IUserStoreStrategy {
 
     constructor(options?: IOptions) {
         this.setOptions(options);
-        console.log('Using mongo url:' + options.url);
+        console.log('Using mongo url:' + this.options.url);
         this.db = new MongoDb(this.options);
     }
 
