@@ -6,6 +6,8 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { ITokenData } from './services/token-service';
 import { UserService } from './services/user-service';
 import { IUserModel } from './services/user-service';
+import { RequestHandler } from '~express/lib/express';
+import { NextFunction } from '~express/lib/express';
 
 export interface ITokenVerifyRequest {
     tokenData: ITokenData;
@@ -111,6 +113,16 @@ export function checkUserParamCreator(name: string) {
         }
 
         req.userId = userId;
+        next();
+    }
+}
+
+export function enableRouteCreator(enabled): RequestHandler {
+    return (req: IAppRequest, res: Response, next: NextFunction) => {
+        if (!enabled) {
+            res.status(404);
+            return res.end();
+        }
         next();
     }
 }
