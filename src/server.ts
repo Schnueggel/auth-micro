@@ -1,10 +1,8 @@
 /**
  * TODO add logging
- * TODO use passport
  * TODO add facebook, github, google auth
  * TODO add integration tests
  * TODO add Docker
- * TODO add tslint
  */
 import * as express from 'express';
 import { config as env, IConfig } from './config';

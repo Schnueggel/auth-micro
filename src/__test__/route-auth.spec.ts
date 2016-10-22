@@ -5,18 +5,17 @@ import { UrlOptions } from 'request';
 import { IncomingMessage } from 'http';
 import { Server } from 'http';
 import { ContextualTestContext } from 'ava';
-import { TestAfter } from '../types';
 
 let app: Server;
 
 test.before(async() => {
     app = await start();
 });
-
-(test.after as TestAfter).always(async() => {
+/* tslint:disable */
+(test.after as any).always(async() => {
     await new Promise((resolve) => app && app.close(resolve) || resolve());
 });
-
+/* tslint:enable */
 test.beforeEach((t: ContextualTestContext) => {
     t.context.options = {
         method: 'POST',
