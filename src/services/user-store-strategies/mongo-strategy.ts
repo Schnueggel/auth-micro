@@ -5,8 +5,9 @@ import { UserDataNotValidError, UserAlreadyExistError, FetchingUserError, UserUp
 import { MongoDb } from './mongo-db';
 import * as EnvUtils from '../../utils/env-utils';
 import { FindOneAndReplaceOption } from 'mongodb';
+import { IHash } from '../../types';
 
-export interface IOptions {
+export interface IOptions extends IHash {
     url?: string;
     usernameRegex?: RegExp;
     enableUsername?: boolean;
@@ -20,10 +21,11 @@ export class MongoStrategy implements IUserStoreStrategy {
 
     constructor(options?: IOptions) {
         this.setOptions(options);
+        console.log('Using mongo url:' + options.url);
         this.db = new MongoDb(this.options);
     }
 
-    setOptions(options: IOptions) {
+    public setOptions(options: IOptions) {
         this.options = Object.assign({
             emailRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_EMAIL_REGEX', /[^ @]*@[^ @]*/),
             usernameRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_USERNAME_REGEX', /^[a-zA-Z][0-9a-zA-Z]{1,20}$/),

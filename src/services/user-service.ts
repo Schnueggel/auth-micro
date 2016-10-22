@@ -1,7 +1,10 @@
 /**
  * TODO Error docs
  */
-export interface IUserStoreStrategy {
+export interface IUserStoreStrategy extends IUserService {
+}
+
+export interface IUserService {
     createUser(data: IUserData): Promise<IUserModel>;
     /**
      * @throws UserNotFoundError
@@ -44,7 +47,7 @@ export const UserDataTypeMap = {
 /**
  * TODO Error docs
  */
-export class UserService implements IUserStoreStrategy {
+export class UserService implements IUserService {
     private strategy: IUserStoreStrategy;
 
     constructor(strategy: IUserStoreStrategy) {

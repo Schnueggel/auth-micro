@@ -27,6 +27,7 @@ import { IUserModel } from './services/user-service';
 import { UserNotFoundError, UserDataNotValidError } from './errors';
 import { Server } from 'http';
 import { Profile } from 'passport-facebook';
+import { IHash } from './types';
 
 export interface App extends Application {
     keyStoreResult: KeyStoreResult
@@ -39,6 +40,11 @@ export interface IAppRequest extends Request, ParsedAsJson {
 export interface IFacebookProfile extends Profile {
     id: string;
     email: string;
+}
+
+export interface IStrategyOptions {
+    userStrategyOptions?: IHash;
+    keyStoryStrategyOptions?: IHash;
 }
 
 let server: Server;
@@ -54,15 +60,15 @@ export async function stop(): Promise<void> {
     });
 }
 
-export async function start(config?: IConfig): Promise<Server> {
-    config = config || env;
+export async function start(config?: IConfig & IStrategyOptions): Promise<Server> {
+    config = Object.assign({}, env, config);
     const app: App = express() as App;
 
     await stop();
 
     const passport = new passwordjs.Passport();
-    const userStrategy = StrategyUtils.requireUserStoreStrategy(config.USER_STORE_STRATEGY);
-    const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY);
+    const userStrategy = StrategyUtils.requireUserStoreStrategy(config.USER_STORE_STRATEGY, config.userStrategyOptions);
+    const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY, config.keyStoryStrategyOptions);
     const userService = new UserService(userStrategy);
     const keyStoreService = new KeyStoreService(keyStoreStrategy);
     const tokenService = new TokenService();
