@@ -16,25 +16,25 @@ import { ParsedAsJson } from 'body-parser';
 import { TokenService } from './services/token-service';
 import { KeyStoreResult } from './services/key-store-service';
 import { Application } from '~express/lib/application';
-const passwordjs = require('passport');
-import { Strategy as FacebookStrategy } from 'passport-facebook';
 import {
-    tokenExists, tokenVerifyCreator, userFromTokenCreator, checkUserParamCreator, IUserFromTokenRequest, ICheckUserFromParamRequest, enableRouteCreator
+    tokenExists, tokenVerifyCreator, userFromTokenCreator, checkUserParamCreator, IUserFromTokenRequest, ICheckUserFromParamRequest
 } from './middleware';
 import { isEmpty, pick } from 'lodash';
 import { IUserData } from './services/user-service';
 import { IUserModel } from './services/user-service';
-import { UserNotFoundError, UserDataNotValidError } from './errors';
+import { UserNotFoundError } from './errors';
 import { Server } from 'http';
 import { Profile } from 'passport-facebook';
 import { IHash } from './types';
+import { routesFactory } from './routes/index';
 
-export interface App extends Application {
-    keyStoreResult: KeyStoreResult
+export interface IApp extends Application {
+    keyStoreResult: KeyStoreResult;
+    config: IConfig;
 }
 
 export interface IAppRequest extends Request, ParsedAsJson {
-    app: App;
+    app: IApp;
 }
 
 export interface IFacebookProfile extends Profile {
@@ -54,6 +54,10 @@ export interface IAuthResponse {
     refreshToken: string;
 }
 
+export type IRefreshRequest = IAppRequest & IUserFromTokenRequest;
+export type DeleteUserRequest = IAppRequest & ICheckUserFromParamRequest;
+export type PutUserRequest = IAppRequest & ICheckUserFromParamRequest;
+
 export async function stop(): Promise<void> {
     if (!server) {
         return Promise.resolve();
@@ -67,11 +71,11 @@ export async function stop(): Promise<void> {
 
 export async function start(config?: IConfig & IStrategyOptions): Promise<Server> {
     config = Object.assign({}, env, config);
-    const app: App = express() as App;
+    const app: IApp = express() as IApp;
+    app.config = config;
 
     await stop();
 
-    const passport = new passwordjs.Passport();
     const userStrategy = StrategyUtils.requireUserStoreStrategy(config.USER_STORE_STRATEGY, config.userStrategyOptions);
     const keyStoreStrategy = StrategyUtils.requireKeyStoreStrategy(config.KEY_STORE_STRATEGY, config.keyStoryStrategyOptions);
     const userService = new UserService(userStrategy);
@@ -83,93 +87,7 @@ export async function start(config?: IConfig & IStrategyOptions): Promise<Server
     const userFromToken = userFromTokenCreator(userService);
     const checkUserParam = checkUserParamCreator('id');
 
-    if (config.AUTH_FACEBOOK) {
-        const facebookStrategy = new FacebookStrategy({
-                clientID: config.FACEBOOK_APP_ID,
-                clientSecret: config.FACEBOOK_APP_SECRET,
-                callbackURL: config.FACEBOOK_CALLBACK_URL,
-                profileFields: ['id', 'email'].concat(config.FACEBOOK_PROFILE_FIELDS)
-            },
-            async function (accessToken: string, refreshToken: string, profile: IFacebookProfile, cb) {
-                try {
-                    let user = await userService.findFacebookUser(profile.id);
-
-                    if (!user) {
-                        user = await userService.createUser({facebookId: profile.id, email: profile.email});
-                    }
-                    // TODO go on
-                } catch (err) {
-                    cb(err, null);
-                }
-            }
-        );
-
-        passport.use('facebook', facebookStrategy);
-    }
-
-    app.post('/auth', bodyParserJson, async(req: IAppRequest, res: Response) => {
-        if (!req.body.username || !req.body.password) {
-            res.status(400);
-            res.json({
-                message: 'Invalid Data'
-            });
-            return;
-        }
-
-        try {
-            const user = await userService.findUsernamePassword(req.body.username, req.body.password);
-
-            if (!user) {
-                res.status(401);
-                res.json({
-                    message: 'Auth failed'
-                });
-                return;
-            }
-
-            const tokens = await tokenService.createTokensFromUser(user, req.app.keyStoreResult.privateKey, req.app.keyStoreResult.uid);
-
-            res.json(tokens);
-        } catch (err) {
-            if (err instanceof UserDataNotValidError) {
-                res.status(422);
-                res.json({message: err.message});
-                return;
-            }
-            console.error(err);
-            res.status(500);
-            res.json({message: err.message});
-        }
-    });
-
-    app.post('/auth/facebook', enableRouteCreator(config.AUTH_FACEBOOK), async(req: IRefreshRequest, res: Response, next: Function) => {
-        passport.authenticate('facebook', function (err: Error, user, info) {
-        })(req, res, next);
-    });
-
-    type IRefreshRequest = IAppRequest & IUserFromTokenRequest;
-
-    app.post('/refresh', bodyParserJson, tokenExists, tokenVerify, userFromToken, async(req: IRefreshRequest, res: Response) => {
-        try {
-            if (!req.tokenData.payload.refresh) {
-                res.status(400);
-                res.json({
-                    message: 'Not a refresh token'
-                });
-                return;
-            }
-
-            const token = await tokenService.createTokenFromUser(req.tokenUser, req.app.keyStoreResult.privateKey, req.app.keyStoreResult.uid);
-
-            res.json({token});
-        } catch (err) {
-            console.error(err);
-            res.status(500);
-            res.json({message: 'Service failed'});
-        }
-    });
-
-    type DeleteUserRequest = IAppRequest & ICheckUserFromParamRequest;
+    routesFactory(app, tokenService, userService, keyStoreService);
 
     app.delete('/user/:id', bodyParserJson, tokenExists, tokenVerify, userFromToken, checkUserParam, async(req: DeleteUserRequest, res: Response) => {
         try {
@@ -191,8 +109,6 @@ export async function start(config?: IConfig & IStrategyOptions): Promise<Server
             res.json({message: 'Service failed'});
         }
     });
-
-    type PutUserRequest = IAppRequest & ICheckUserFromParamRequest;
 
     app.put('/user/:id', bodyParserJson, tokenExists, tokenVerify, userFromToken, checkUserParam, async(req: PutUserRequest, res: Response) => {
         try {
