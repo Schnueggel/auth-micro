@@ -19,16 +19,18 @@ build:
   # Read more about steps on our dev center:
   # http://devcenter.wercker.com/docs/steps/index.html
   steps:
-    # A step that executes `npm install` command
-    - npm-install
+    - script:
+        name: installl yarn
+        code: |
+          yarn install -g yarn
     - script:
         name: build
         code: |
-          npm run build
+          yarn run build
     # A step that executes `npm test` command
     - script:
-        name: npm test
+        name: yarn test
         code: |
           export KS_REDIS_STRATEGY_HOST=$REDIS_PORT_6379_TCP_ADDR
           export US_MONGO_STRATEGY_URL="$MONGO_PORT_27017_TCP_ADDR:27017/auth-micro"
-          npm run test
+          yarn run test
