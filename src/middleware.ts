@@ -44,7 +44,7 @@ export function tokenVerifyCreator(tokenService: TokenService, keyStoreService: 
             if (!tokenData) {
                 res.status(400);
                 res.json({
-                    message: 'Not a refresh token'
+                    message: 'Not a valid token'
                 });
                 return;
             }

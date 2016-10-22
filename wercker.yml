@@ -31,9 +31,8 @@ build:
         name: build
         code: |
           yarn run build
-    # A step that executes `npm test` command
     - script:
-        name: yarn test
+        name: run tests
         code: |
           export KS_REDIS_STRATEGY_HOST=$REDIS_PORT_6379_TCP_ADDR
           export US_MONGO_STRATEGY_URL="$MONGO_PORT_27017_TCP_ADDR:27017/auth-micro"

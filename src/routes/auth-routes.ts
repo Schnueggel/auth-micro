@@ -3,13 +3,21 @@ import { TokenService } from '../services/token-service';
 import { UserService } from '../services/user-service';
 import { KeyStoreService } from '../services/key-store-service';
 import { IAppRequest, IApp, IFacebookProfile } from '../server';
-import { UserDataNotValidError } from '../errors';
 import { Response } from '~express/lib/response';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { tokenExists, enableRouteCreator, tokenVerifyCreator, userFromTokenCreator, IUserFromTokenRequest } from '../middleware';
 const bodyParserJson = bodyParser.json();
 
 export type IRefreshRequest = IAppRequest & IUserFromTokenRequest;
+
+export interface IAuthResponse {
+    token: string;
+    refreshToken: string;
+}
+
+export interface IRefreshResponse {
+    token: string;
+}
 
 export function authRoutesFactory(app: IApp, tokenService: TokenService, userService: UserService, keyStoreService: KeyStoreService): void {
     const passwordjs = require('passport');
@@ -41,11 +49,6 @@ export function authRoutesFactory(app: IApp, tokenService: TokenService, userSer
 
             res.json(tokens);
         } catch (err) {
-            if (err instanceof UserDataNotValidError) {
-                res.status(422);
-                res.json({message: err.message});
-                return;
-            }
             console.error(err);
             res.status(500);
             res.json({message: err.message});

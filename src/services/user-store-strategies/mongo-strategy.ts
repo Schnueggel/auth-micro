@@ -26,6 +26,7 @@ export class MongoStrategy implements IUserStoreStrategy {
     }
 
     public setOptions(options: IOptions) {
+        // TODO RegExp should go into service
         this.options = Object.assign({
             emailRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_EMAIL_REGEX', /[^ @]*@[^ @]*/),
             usernameRegex: EnvUtils.getRegExp('US_MONGO_STRATEGY_USERNAME_REGEX', /^[a-zA-Z][0-9a-zA-Z]{1,20}$/),
