@@ -59,7 +59,7 @@ export function authRoutesFactory(app: IApp, tokenService: TokenService, userSer
                 callbackURL: app.config.FACEBOOK_CALLBACK_URL,
                 profileFields: ['id', 'email'].concat(app.config.FACEBOOK_PROFILE_FIELDS)
             },
-            async function (accessToken: string, refreshToken: string, profile: IFacebookProfile, cb: Function): void {
+            async function (accessToken: string, refreshToken: string, profile: IFacebookProfile, cb: Function): Promise<void> {
                 try {
                     let user = await userService.findFacebookUser(profile.id);
 
