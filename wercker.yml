@@ -22,7 +22,7 @@ build:
     - script:
         name: installl yarn
         code: |
-          yarn install -g yarn
+          npm install -g yarn
     - script:
         name: build
         code: |
