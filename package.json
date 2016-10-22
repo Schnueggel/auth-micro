@@ -20,7 +20,8 @@
     "passport": "0.3.2",
     "passport-facebook": "2.1.1",
     "pm2": "2.0.18",
-    "redis": "2.6.2"
+    "redis": "2.6.2",
+    "rimraf": "^2.5.4"
   },
   "devDependencies": {
     "ava": "0.16.0",

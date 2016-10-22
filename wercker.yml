@@ -20,7 +20,7 @@ build:
   # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
-        name: installl yarn
+        name: install yarn
         code: |
           npm install -g yarn
     - script:
