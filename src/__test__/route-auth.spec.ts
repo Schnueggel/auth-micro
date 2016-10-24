@@ -10,18 +10,25 @@ import { IAuthResponse } from '../routes/auth-routes';
 
 let app: IApp;
 let user: IUserModel;
+let user2: IUserModel;
 
 test.before(async() => {
     process.env['US_MONGO_STRATEGY_URL'] = process.env['US_MONGO_STRATEGY_URL'] || 'localhost:27017/auth-micro-test';
     app = await start();
     const _user = await app.userService.findUser('test');
-    if (_user) {
-        await app.userService.deleteUser(_user._id);
-    }
+    const _user2 = await app.userService.findUser('test2');
+
+    await app.userService.deleteUser(_user && _user._id);
+    await app.userService.deleteUser(_user2 && _user2._id);
 
     user = await app.userService.createUser({
         username: 'test',
-        email: 'test@email.de',
+        email: 'test@email.com',
+        password: '12345678'
+    });
+    user2 = await app.userService.createUser({
+        username: 'test2',
+        email: 'test2@email.com',
         password: '12345678'
     });
 });
@@ -32,6 +39,7 @@ test.before(async() => {
 /* tslint:enable */
 
 test.beforeEach((t: ContextualTestContext) => {
+    // TODO split options into refresh and auth
     t.context.options = {
         method: 'POST',
         uri: 'http://localhost:9999/auth',
@@ -82,7 +90,7 @@ test('should reject invalid login attempt with 400 if username is missing', asyn
 
 test('should auth user by email', async t => {
     t.context.options.body = {
-        username: 'test@email.de',
+        username: 'test@email.com',
         password: '12345678'
     };
     /* tslint:disable */
@@ -169,6 +177,30 @@ test('should refresh auth with valid refresh token', async t => {
     t.regex(response.body.token, /.+\..+\..+/);
 });
 
+test.serial('should reject refresh without valid user', async t => {
+    try {
+        t.context.options.body = {
+            username: 'test2',
+            password: '12345678'
+        };
+        /* tslint:disable */
+        const response: Response<IAuthResponse> = (await requestPromise(t.context.options as UrlOptions) as any) as Response<IAuthResponse>;
+        /* tslint:enable */
+
+        app.userService.deleteUser(user2._id);
+        await requestPromise(Object.assign({}, t.context.options, {
+            uri: 'http://localhost:9999/refresh',
+            body: {
+                token: response.body.refreshToken
+            }
+        }) as UrlOptions);
+        t.fail('Expecting Exception to be thrown');
+    } catch (err) {
+        t.is(err.response.statusCode, 404);
+        t.is(err.response.body.message, 'User not found');
+    }
+});
+
 test.serial('should reject refresh without valid publickey', async t => {
     try {
         t.context.options.body = {
@@ -188,7 +220,7 @@ test.serial('should reject refresh without valid publickey', async t => {
         await requestPromise(Object.assign({}, t.context.options, {
             uri: 'http://localhost:9999/refresh',
             body: {
-                token: response.body.token
+                token: response.body.refreshToken
             }
         }) as UrlOptions);
         t.fail('Expecting Exception to be thrown');

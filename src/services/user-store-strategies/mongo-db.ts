@@ -28,7 +28,7 @@ export class MongoDb {
         const db = await mongodb.MongoClient.connect('mongodb://' + url);
         db.collection('users').createIndex({email: 1}, {unique: true});
         db.collection('users').createIndex({username: 1}, {unique: true});
-        db.collection('users').createIndex({facebookId: 1}, {unique: true});
+        db.collection('users').createIndex({facebookId: 1}, {unique: true, sparse: true});
         return db;
     }
 
