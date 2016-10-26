@@ -7,13 +7,14 @@ import { ContextualTestContext } from 'ava';
 import { IUserModel } from '../services/user-service';
 import { Response } from 'http';
 import { IAuthResponse } from '../routes/auth-routes';
+import { importEnvFromFile } from '../utils/env-utils';
 
 let app: IApp;
 let user: IUserModel;
 let user2: IUserModel;
 
 test.before(async() => {
-    process.env['US_MONGO_STRATEGY_URL'] = process.env['US_MONGO_STRATEGY_URL'] || 'localhost:27017/auth-micro-test';
+    importEnvFromFile(__dirname + '/auth.env');
     app = await start();
     const _user = await app.userService.findUser('test');
     const _user2 = await app.userService.findUser('test2');

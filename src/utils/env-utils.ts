@@ -42,3 +42,17 @@ export function getArray(key: string, defaultValue?: Array<string>): Array<strin
     }
     return defaultValue;
 }
+
+/**
+ * Imports env vars from a file. This file should have an export named config that represents a hashmap
+ * If the file does not exist there will be a warning on the console
+ * @param file
+ */
+export function importEnvFromFile(file: string): void {
+    try {
+        const env = require(file);
+        Object.assign(process.env, env.config);
+    } catch (err) {
+        console.warn('Unable to import env from file: ' + file);
+    }
+}

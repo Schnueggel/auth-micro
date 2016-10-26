@@ -79,10 +79,10 @@ export function authRoutesFactory(app: IApp, tokenService: TokenService, userSer
         passport.use('facebook', facebookStrategy);
     }
 
-    app.post('/auth/facebook', enableRouteCreator(app.config.AUTH_FACEBOOK), async(req: IRefreshRequest, res: Response, next: Function) => {
+    app.post('/auth/facebook', enableRouteCreator(app.config.AUTH_FACEBOOK), async(req: IRefreshRequest, res: Response) => {
         passport.authenticate('facebook', function (err: Error, user: Object, info: Object): void {
             console.error(err);
-        })(req, res, next);
+        })(req, res);
     });
 
     app.post('/refresh', bodyParserJson, tokenExists, tokenVerify, userFromToken, async(req: IRefreshRequest, res: Response) => {
