@@ -15,7 +15,7 @@
     "conventional-changelog-lint": "^1.0.1",
     "express": "4.14.0",
     "jsonwebtoken": "7.1.9",
-    "lodash": "4.16.4",
+    "lodash": "4.17.1",
     "mongodb": "2.2.11",
     "passport": "0.3.2",
     "passport-facebook": "2.1.1",
