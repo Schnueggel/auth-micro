@@ -32,7 +32,7 @@
     "request-promise-native": "1.0.3",
     "rimraf": "2.5.4",
     "tslint": "3.15.1",
-    "typescript": "2.1.0-dev.20161017"
+    "typescript": "2.1"
   },
   "scripts": {
     "commit": "git-cz",
