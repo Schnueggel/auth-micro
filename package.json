@@ -25,6 +25,8 @@
   "devDependencies": {
     "ava": "0.16.0",
     "cz-customizable": "4.0.0",
+      "commitizen": "2.8.6",
+      "conventional-changelog-lint": "1.0.1",
     "husky": "0.11.9",
     "node-rsa": "0.4.2",
     "request": "2.76.0",
@@ -37,8 +39,6 @@
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
     "precommit": "yarn run lint",
-    "commitizen": "2.8.6",
-    "conventional-changelog-lint": "1.0.1",
     "test": "ava ./dist/**/*.spec.js",
     "start": "pm2 start dist/server.js --name=auth-micro",
     "lint": "tslint src/**/*.ts",
