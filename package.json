@@ -15,7 +15,7 @@
     "express": "4.14.0",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
-    "mongodb": "2.2.11",
+    "mongodb": "2.2.23",
     "passport": "0.3.2",
     "passport-facebook": "2.1.1",
     "pm2": "2.0.19",
