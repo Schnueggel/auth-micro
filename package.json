@@ -32,7 +32,7 @@
     "node-rsa": "0.4.2",
     "request": "2.79.0",
     "request-promise-native": "1.0.3",
-    "rimraf": "2.6.0",
+    "rimraf": "2.6.1",
     "tslint": "4.4.2",
     "typescript": "2.1"
   },
