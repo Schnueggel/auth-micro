@@ -30,7 +30,7 @@
     "cz-customizable": "4.0.0",
     "husky": "0.13.1",
     "node-rsa": "0.4.2",
-    "request": "2.79.0",
+    "request": "2.80.0",
     "request-promise-native": "1.0.3",
     "rimraf": "2.6.0",
     "tslint": "4.4.2",
