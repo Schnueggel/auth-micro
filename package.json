@@ -19,7 +19,7 @@
     "passport": "0.3.2",
     "passport-facebook": "2.1.1",
     "pm2": "2.4.0",
-    "redis": "2.6.5",
+    "redis": "2.7.0",
     "request-promise": "4.1.1"
   },
   "devDependencies": {
