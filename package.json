@@ -33,7 +33,7 @@
     "request": "2.79.0",
     "request-promise-native": "1.0.3",
     "rimraf": "2.6.0",
-    "tslint": "4.4.2",
+    "tslint": "5.0.0",
     "typescript": "2.1"
   },
   "scripts": {
