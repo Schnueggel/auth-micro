@@ -27,7 +27,7 @@
     "ava": "0.18.2",
     "commitizen": "2.9.6",
     "conventional-changelog-lint": "1.1.0",
-    "cz-customizable": "4.0.0",
+    "cz-customizable": "5.0.0",
     "husky": "0.13.1",
     "node-rsa": "0.4.2",
     "request": "2.79.0",
