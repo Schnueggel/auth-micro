@@ -21,14 +21,13 @@
             "spaces"
         ],
         "interface-name": [
-            true,
-            "prefix"
+            false,
+            "no-prefix"
         ],
         "jsdoc-format": true,
         "label-position": true,
-        "label-undefined": true,
         "linebreak-style": [
-            true,
+            false,
             "LF"
         ],
         "max-file-line-count": false,
@@ -45,7 +44,7 @@
         ],
         "new-parens": true,
         "no-angle-bracket-type-assertion": true,
-        "no-any": true,
+        "no-any": false,
         "no-arg": true,
         "no-bitwise": true,
         "no-conditional-assignment": true,
@@ -54,12 +53,10 @@
             false
         ],
         "no-construct": true,
-        "no-constructor-vars": true,
         "no-debugger": true,
         "no-default-export": true,
-        "no-duplicate-key": true,
         "no-duplicate-variable": true,
-        "no-empty": true,
+        "no-empty": false,
         "no-eval": true,
         "no-inferrable-types": [
             true,
@@ -78,13 +75,11 @@
         "no-string-literal": false,
         "no-switch-case-fall-through": true,
         "no-trailing-whitespace": true,
-        "no-unreachable": true,
         "no-unsafe-finally": true,
-        "no-unused-expression": true,
-        "no-unused-variable": true,
-        "no-use-before-declare": true,
+        "no-unused-expression": false,
+        "no-use-before-declare": false,
         "no-var-keyword": true,
-        "no-var-requires": true,
+        "no-var-requires": false,
         "object-literal-key-quotes": [
             true,
             "as-needed"
@@ -124,7 +119,7 @@
         ],
         "switch-default": true,
         "trailing-comma": [
-            true,
+            false,
             {
                 "multiline": "never",
                 "singleline": "never"
@@ -152,9 +147,6 @@
             }
         ],
         "use-isnan": true,
-        "use-strict": [
-            false
-        ],
         "variable-name": [
             true,
             "ban-keywords"

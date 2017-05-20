@@ -1,3 +1,3 @@
 export interface IHash {
-    [index:string]:any
+    [index: string]: any;
 }

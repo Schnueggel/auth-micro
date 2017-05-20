@@ -21,7 +21,7 @@ export class RedisStrategy implements IKeyStoreStrategy {
         this.client = redis.createClient(this.options);
     }
 
-    setOptions(options: IOptions) {
+    public setOptions(options: IOptions): void {
         this.options = Object.assign({
             publicKeyTtl: EnvUtils.getNumber('KS_REDIS_STRATEGY_PUBLIC_KEY_TTL', 60 * 60 * 24 * 30),
             host: EnvUtils.getString('KS_REDIS_STRATEGY_HOST', 'localhost'),
@@ -29,11 +29,11 @@ export class RedisStrategy implements IKeyStoreStrategy {
         }, options);
     }
 
-    get(key: string): Promise<string> {
+    public get(key: string): Promise<string> {
         return this.client.getAsync(key);
     }
 
-    set(key: string, value: string, ttl?: number): Promise<string> {
+    public set(key: string, value: string, ttl?: number): Promise<string> {
         return this.client.setAsync(key, value)
             .then(() => {
                 ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
@@ -42,7 +42,7 @@ export class RedisStrategy implements IKeyStoreStrategy {
             });
     }
 
-    del(key: string): Promise<boolean> {
+    public del(key: string): Promise<boolean> {
         return this.client.delAsync(key).then(count => count === 1);
     }
 }

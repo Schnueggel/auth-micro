@@ -2,10 +2,9 @@ import * as bodyParser from 'body-parser';
 import { TokenService } from '../services/token-service';
 import { UserService } from '../services/user-service';
 import { KeyStoreService } from '../services/key-store-service';
-import { IAppRequest, IApp, IFacebookProfile } from '../server';
+import { IAppRequest, IApp } from '../server';
 import { Response } from '~express/lib/response';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { tokenExists, enableRouteCreator, tokenVerifyCreator, userFromTokenCreator, IUserFromTokenRequest } from '../middleware';
+import { tokenExists, tokenVerifyCreator, userFromTokenCreator, IUserFromTokenRequest } from '../middleware';
 const bodyParserJson = bodyParser.json();
 
 export type IRefreshRequest = IAppRequest & IUserFromTokenRequest;
@@ -53,36 +52,6 @@ export function authRoutesFactory(app: IApp, tokenService: TokenService, userSer
             res.status(500);
             res.json({message: err.message});
         }
-    });
-
-    if (app.config.AUTH_FACEBOOK) {
-        const facebookStrategy = new FacebookStrategy({
-                clientID: app.config.FACEBOOK_APP_ID,
-                clientSecret: app.config.FACEBOOK_APP_SECRET,
-                callbackURL: app.config.FACEBOOK_CALLBACK_URL,
-                profileFields: ['id', 'email'].concat(app.config.FACEBOOK_PROFILE_FIELDS)
-            },
-            async function (accessToken: string, refreshToken: string, profile: IFacebookProfile, cb: Function): Promise<void> {
-                try {
-                    let user = await userService.findFacebookUser(profile.id);
-
-                    if (!user) {
-                        user = await userService.createUser({facebookId: profile.id, email: profile.email});
-                    }
-                    // TODO go on
-                } catch (err) {
-                    cb(err, null);
-                }
-            }
-        );
-
-        passport.use('facebook', facebookStrategy);
-    }
-
-    app.post('/auth/facebook', enableRouteCreator(app.config.AUTH_FACEBOOK), async(req: IRefreshRequest, res: Response) => {
-        passport.authenticate('facebook', function (err: Error, user: Object, info: Object): void {
-            console.error(err);
-        })(req, res);
     });
 
     app.post('/refresh', bodyParserJson, tokenExists, tokenVerify, userFromToken, async(req: IRefreshRequest, res: Response) => {

@@ -31,7 +31,7 @@ export class KeyStoreService {
      * @return {Promise<string>}
      */
     public store(key: string): Promise<string> {
-        return this.hashKey(key).then(uid => {
+        return this.hashKey(key).then((uid: string) => {
             this.strategy.set(uid, key);
             return uid;
         });
@@ -71,5 +71,4 @@ export class KeyStoreService {
     private hashKey(key: string): Promise<string> {
         return new Promise(resolve => resolve(crypto.createHash('md5').update(key).digest('hex')));
     }
-
 }

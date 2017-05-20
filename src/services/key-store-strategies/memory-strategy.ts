@@ -17,13 +17,13 @@ export class MemoryStrategy implements IKeyStoreStrategy {
         this.setOptions(options);
     }
 
-    setOptions(options: IOptions) {
+    public setOptions(options: IOptions): void {
         this.options = Object.assign({
             publicKeyTtl: EnvUtils.getNumber('KS_MEMORY_STRATEGY_PUBLIC_KEY_TTL', 3600)
         }, options);
     }
 
-    get(key: string): Promise<string> {
+    public get(key: string): Promise<string> {
         return new Promise(
             (resolve) => {
                 resolve(this.store[key] || null);
@@ -31,7 +31,7 @@ export class MemoryStrategy implements IKeyStoreStrategy {
         );
     }
 
-    set(key: string, value: string, ttl: number): Promise<string> {
+    public set(key: string, value: string, ttl: number): Promise<string> {
         return new Promise(resolve => {
             ttl = typeof ttl === 'number' ? ttl : this.options.publicKeyTtl;
             if (this.store[key]) {
@@ -47,7 +47,7 @@ export class MemoryStrategy implements IKeyStoreStrategy {
         });
     }
 
-    del(key: string): Promise<boolean> {
+    public del(key: string): Promise<boolean> {
         delete this.store[key];
         clearTimeout(this.timeouts[key]);
         delete this.timeouts[key];

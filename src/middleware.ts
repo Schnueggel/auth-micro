@@ -23,7 +23,7 @@ export interface ICheckUserFromParamRequest extends IUserFromTokenRequest {
 /**
  * TODO load token from header or body and place it as request property token
  */
-export function tokenExists(req: IAppRequest, res: Response, next: Function) {
+export function tokenExists(req: IAppRequest, res: Response, next: Function): void {
     if (!req.body.token) {
         res.status(400);
         res.json({
@@ -35,8 +35,8 @@ export function tokenExists(req: IAppRequest, res: Response, next: Function) {
     }
 }
 
-export function tokenVerifyCreator(tokenService: TokenService, keyStoreService: KeyStoreService) {
-    return async(req: IAppRequest & ITokenVerifyRequest, res: Response, next: Function) => {
+export function tokenVerifyCreator(tokenService: TokenService, keyStoreService: KeyStoreService): Function {
+    return async(req: IAppRequest & ITokenVerifyRequest, res: Response, next: Function): Promise<any> => {
         try {
             const tokenData = await tokenService.decodeToken(req.body.token);
             req.tokenData = tokenData;
@@ -71,11 +71,11 @@ export function tokenVerifyCreator(tokenService: TokenService, keyStoreService: 
             }
             res.json({message: 'Service failed'});
         }
-    }
+    };
 }
 
-export function userFromTokenCreator(userService: UserService) {
-    return async(req: IAppRequest & IUserFromTokenRequest, res: Response, next: Function) => {
+export function userFromTokenCreator(userService: UserService): Function {
+    return async(req: IAppRequest & IUserFromTokenRequest, res: Response, next: Function): Promise<any> => {
         try {
             const user = await userService.find(req.tokenData.payload.sub);
 
@@ -92,17 +92,18 @@ export function userFromTokenCreator(userService: UserService) {
             res.status(500);
             res.json({message: 'Service failed'});
         }
-    }
+    };
 }
 
 /**
- * Create a middleware that checks the user id in the route params against the id in the token. If the ids do not match or the user of the token is not admin the check will fail
+ * Create a middleware that checks the user id in the route params against the id in the token.
+ * If the ids do not match or the user of the token is not admin the check will fail
  * with Status code 403
  * TODO load user from param and change user from token to req param tokenUser
  * TODO config param for allow user self update
  */
-export function checkUserParamCreator(name: string) {
-    return (req: IAppRequest & ICheckUserFromParamRequest, res: Response, next: Function) => {
+export function checkUserParamCreator(name: string): Function {
+    return (req: IAppRequest & ICheckUserFromParamRequest, res: Response, next: Function): Promise<any> => {
         const userId = String(req.tokenUser._id);
         if (userId !== req.params[name] && !req.tokenUser.isAdmin) {
             res.status(403);
@@ -114,15 +115,15 @@ export function checkUserParamCreator(name: string) {
 
         req.userId = userId;
         next();
-    }
+    };
 }
 
-export function enableRouteCreator(enabled): RequestHandler {
-    return (req: IAppRequest, res: Response, next: NextFunction) => {
+export function enableRouteCreator(enabled: boolean): RequestHandler {
+    return (req: IAppRequest, res: Response, next: NextFunction): void => {
         if (!enabled) {
             res.status(404);
             return res.end();
         }
         next();
-    }
+    };
 }
