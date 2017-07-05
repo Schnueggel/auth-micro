@@ -8,32 +8,32 @@
     "type": "git"
   },
   "dependencies": {
-    "ava": "0.19.1",
+    "ava": "0.20.0",
     "bcrypt": "1.0.2",
     "bluebird": "3.5.0",
     "body-parser": "1.17.2",
     "express": "4.15.3",
     "jsonwebtoken": "7.4.1",
     "lodash": "4.17.4",
-    "mongodb": "2.2.26",
-    "pm2": "2.4.6",
+    "mongodb": "2.2.29",
+    "pm2": "2.5.0",
     "redis": "2.7.1",
     "request": "2.81.0",
     "request-promise": "4.2.1"
   },
   "devDependencies": {
-    "@types/request-promise": "4.1.33",
-    "ava": "0.19.1",
+    "@types/request-promise": "4.1.35",
+    "ava": "0.20.0",
     "commitizen": "2.9.6",
     "conventional-changelog-lint": "1.1.9",
     "cz-customizable": "5.0.0",
-    "husky": "0.13.3",
+    "husky": "0.14.3",
     "node-rsa": "0.4.2",
     "request": "2.81.0",
     "request-promise-native": "1.0.4",
     "rimraf": "2.6.1",
-    "tslint": "5.2.0",
-    "typescript": "2.3"
+    "tslint": "5.4.3",
+    "typescript": "2.4"
   },
   "scripts": {
     "commit": "git-cz",
